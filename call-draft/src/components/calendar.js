@@ -10,7 +10,7 @@ import styles from './calendar.module.css'
 const Calendar = () => {
   const { requiredShifts } = useEngine()
 
-  if (!requiredShifts) {
+  if (!requiredShifts || requiredShifts.length === 0) {
     return null
   }
 

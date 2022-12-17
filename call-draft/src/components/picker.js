@@ -3,6 +3,7 @@ import { TiWaves } from 'react-icons/ti'
 
 import { useEngine, useEngineDispatch } from '../engine/context'
 import { useOnClickOutside } from '../react-utils'
+import { getUnrestrictedResidents, softRestrictions } from '../restrictions'
 
 import styles from './picker.module.css'
 
@@ -12,10 +13,13 @@ const Picker = ({ assigned, date, shift, close }) => {
   const dispatch = useEngineDispatch()
 
   useOnClickOutside(ref, close)
+
+  const unrestrictedResidents = getUnrestrictedResidents(softRestrictions)(residents)(date)(shift)
+
   return <div className={styles.parent}>
     <TiWaves/>
     <div ref={ref} className={styles.picker}>
-      { residents.map(r =>
+      { unrestrictedResidents.map(r =>
         <div key={r.name}>
           <button
             onClick={() => {
