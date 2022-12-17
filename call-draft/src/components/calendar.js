@@ -2,6 +2,8 @@ import React from 'react'
 
 import { useEngine } from '../engine/context'
 
+import Assigner from './assigner'
+
 import styles from './calendar.module.css'
 
 const Calendar = () => {
@@ -47,9 +49,7 @@ const Cell = ({ date, shift, render }) => {
   }
 
   return <td>
-    <select>
-      <option>what the bugger</option>
-    </select>
+    <Assigner date={date} shift={shift}/>
   </td>
 }
 
