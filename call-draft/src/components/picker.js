@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import { TiWaves } from 'react-icons/ti'
 
 import { useEngine, useEngineDispatch } from '../engine/context'
 import { useOnClickOutside } from '../react-utils'
@@ -11,26 +12,28 @@ const Picker = ({ assigned, date, shift, close }) => {
   const dispatch = useEngineDispatch()
 
   useOnClickOutside(ref, close)
-
-  return <div ref={ref} className={styles.picker}>
-    { residents.map(r =>
-      <div key={r.name}>
-        <button
-          onClick={() => {
-            close()
-            dispatch({
-            type: "assignShift",
-            data: {
-              name: r.name,
-              shift,
-              date,
-            }})
-          }}
-        >
-          {r.name}
-        </button>
-      </div>
-    )}
+  return <div className={styles.parent}>
+    <TiWaves/>
+    <div ref={ref} className={styles.picker}>
+      { residents.map(r =>
+        <div key={r.name}>
+          <button
+            onClick={() => {
+              close()
+              dispatch({
+              type: "assignShift",
+              data: {
+                name: r.name,
+                shift,
+                date,
+              }})
+            }}
+          >
+            {r.name}
+          </button>
+        </div>
+      )}
+    </div>
   </div>
 }
 
