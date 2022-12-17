@@ -13,6 +13,14 @@ export const standardDate = d => DateTime.fromISO(d.toISOString().substring(0, 1
 // if current date is a Saturday, return the same Saturday
 export const getPriorSaturday = day => day.minus({days: mod(day.weekday - 6, 7) })
 
+// get Sunday prior to given day
+// if current date is a Sunday, return the same Sunday
+export const getPriorSunday = day => day.minus({days: mod(day.weekday - 7, 7) })
+
+// get Saturday after given day
+// if given day is a Sunday, return the same Sunday
+export const getNextSaturday = day => day.plus({days: 6 - day.weekday})
+
 // get Sunday after given day
 // if given day is a Sunday, return the same Sunday
 export const getNextSunday = day => day.plus({days: 7 - day.weekday})

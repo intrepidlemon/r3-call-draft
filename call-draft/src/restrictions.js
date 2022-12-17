@@ -1,4 +1,4 @@
-import { getPriorSaturday, getNextSunday, sameDay } from './utils'
+import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay } from './utils'
 
 // 3. Cannot work on weekends during and surrounding NF rotation.
 // this will return false if a resident cannot work on a proposed weekend
@@ -25,6 +25,15 @@ export const querySameDay = ({ assignedShifts }) => weekend => shift =>
   true
 )
 
+export const queryCHOP = ({ CHOP }) => weekend => shift =>
+  CHOP.reduce((conflict, cp) =>
+    conflict + (
+    sameDay(getPriorSaturday(cp), weekend) 
+    || sameDay(getPriorSunday(cp), weekend)
+    || sameDay(getNextSaturday(cp), weekend)
+    || sameDay(getNextSunday(cp), weekend)),
+  0
+) == 2 
 
 export const getUnrestrictedResidents = restrictions => residents => day => shift =>
   residents.filter(
@@ -52,4 +61,5 @@ export const softRestrictions = [
   querySameDay,
   queryNFWeekends,
   queryBlackoutDays,
+  queryCHOP,
 ]
