@@ -1,0 +1,20 @@
+.parent {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: lightgray;
+  height: 100%;
+}
+
+.picker {
+  position: absolute;
+  height: auto;
+  top: 18px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: lightpink;
+  padding: 1rem;
+}

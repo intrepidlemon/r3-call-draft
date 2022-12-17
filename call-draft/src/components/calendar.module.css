@@ -1,0 +1,23 @@
+.table {
+  width: 100%;
+  border-spacing: 0;
+}
+
+.table > * {
+  text-align: left;
+  margin: 0;
+  padding: 0;
+}
+
+.table tr {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.table td {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
