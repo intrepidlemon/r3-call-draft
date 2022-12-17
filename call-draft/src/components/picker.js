@@ -1,0 +1,37 @@
+import React, { useRef } from 'react'
+
+import { useEngine, useEngineDispatch } from '../engine/context'
+import { useOnClickOutside } from '../react-utils'
+
+import styles from './picker.module.css'
+
+const Picker = ({ assigned, date, shift, close }) => {
+  const ref = useRef()
+  const { residents } = useEngine()
+  const dispatch = useEngineDispatch()
+
+  useOnClickOutside(ref, close)
+
+  return <div ref={ref} className={styles.picker}>
+    { residents.map(r =>
+      <div key={r.name}>
+        <button
+          onClick={() => {
+            close()
+            dispatch({
+            type: "assignShift",
+            data: {
+              name: r.name,
+              shift,
+              date,
+            }})
+          }}
+        >
+          {r.name}
+        </button>
+      </div>
+    )}
+  </div>
+}
+
+export default Picker

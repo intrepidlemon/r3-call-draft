@@ -1,4 +1,5 @@
 import React from 'react'
+import { DateTime } from 'luxon'
 
 import { useEngine } from '../engine/context'
 
@@ -16,19 +17,20 @@ const Calendar = () => {
   return <table className={styles.table}>
     <thead>
       <tr>
-        { Object.keys(requiredShifts[0]).map(k => <th>{k}</th>)}
+        { Object.keys(requiredShifts[0]).map(k => <th key={k}>{k}</th>)}
       </tr>
     </thead>
     <tbody>
-      { requiredShifts.map(r => <Row row={r} />) }
+      { requiredShifts.map(r => <Row key={r.date.toMillis()} row={r} />) }
     </tbody>
   </table>
 }
 
 const Row = ({ row }) => {
-  return <tr>
+  return <tr >
     {
       Object.keys(row).map(k => <Cell
+        key={k}
         // TODO: make the names of each prop much more clear. Making some bad assumptions here
         date={row["date"]}
         shift={k}
@@ -41,7 +43,7 @@ const Row = ({ row }) => {
 const Cell = ({ date, shift, render }) => {
   if (shift === "date") {
     return <td>
-      {render}
+      {render.toLocaleString(DateTime.DATE_HUGE)}
     </td>
   }
   if(render === "0") {
