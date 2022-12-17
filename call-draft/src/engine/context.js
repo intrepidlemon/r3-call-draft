@@ -73,7 +73,6 @@ export const EngineProvider = ({ children }) => {
   </EngineContext.Provider>
 }
 
-
 export const useEngine = () => useContext(EngineContext)
 
 export const useEngineDispatch = () => useContext(EngineDispatchContext)
@@ -127,19 +126,13 @@ const engineReducer = (engine, action) => {
 }
 
 const initialEngine = {
-  assignedShifts: {},
+  requiredShifts: [],
   rotations: [],
   preferences: [],
-  residents: [
-  {
-    name: "Xi",
-    assignedShifts: [ { date: parseDate("2023-09-03"), shift: "DF HUP" } ],
-  },
-  {
-    name: "Gangaram",
-    assignedShifts: [],
-  },
-]}
+  residents: [],
+
+  assignedShifts: {},
+}
 
 // reducers
 
