@@ -25,6 +25,10 @@ export const querySameDay = ({ assignedShifts }) => weekend => shift =>
   true
 )
 
+// cannot take call shifts when between two weeks assigned at CHOP
+
+// Because this constraint requires knowledge of multiple CHOP weeks
+// we cannot use a boolean and need to maintain state. 
 export const queryCHOP = ({ CHOP }) => weekend => shift =>
   CHOP.reduce((conflict, cp) =>
     conflict + (
@@ -33,7 +37,7 @@ export const queryCHOP = ({ CHOP }) => weekend => shift =>
     || sameDay(getNextSaturday(cp), weekend)
     || sameDay(getNextSunday(cp), weekend)),
   0
-) == 2 
+) < 2 
 
 export const getUnrestrictedResidents = restrictions => residents => day => shift =>
   residents.filter(
