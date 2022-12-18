@@ -74,7 +74,6 @@ export const EngineProvider = ({ children }) => {
 }
 
 export const useEngine = () => useContext(EngineContext)
-
 export const useEngineDispatch = () => useContext(EngineDispatchContext)
 
 const engineReducer = (engine, action) => {
@@ -99,8 +98,11 @@ const engineReducer = (engine, action) => {
       engine.residents = action.data.map(d => ({
         ...d,
         ...engine.rotations.find(({ name }) => name === d.name),
-        assignedShifts: [], // where default assigned locations are born
       }))
+
+      action.data.forEach(d => {
+        engine.assignedShiftsByResident[d.name] = engine.assignedShiftsByResident[d.name] || []
+      })
       break;
     }
 
@@ -109,8 +111,7 @@ const engineReducer = (engine, action) => {
 
       const { date, shift, name } = action.data
 
-      const ri = engine.residents.findIndex(r => r.name === name)
-      engine.residents[ri].assignedShifts.push({ date, shift })
+      engine.assignedShiftsByResident[name].push({ date, shift })
 
       engine.assignedShifts[date.toMillis()][shift] = name
       break;
@@ -132,6 +133,7 @@ const initialEngine = {
   residents: [],
 
   assignedShifts: {},
+  assignedShiftsByResident: {},
 }
 
 // reducers
@@ -139,9 +141,15 @@ const initialEngine = {
 const clearShift = (engine, action) => {
   const { date, shift } = action.data
 
-  engine.residents.forEach(r => {
-    r.assignedShifts = r.assignedShifts.filter(s => !(sameDay(s.date, date) && shift === s.shift))
+  Object.keys(engine.assignedShiftsByResident).forEach(k => {
+    engine.assignedShiftsByResident[k] = engine.assignedShiftsByResident[k].filter(s => !(sameDay(s.date, date) && shift === s.shift))
   })
 
   delete engine.assignedShifts[date.toMillis()][shift]
 }
+
+// views
+export const residentsView = ({ residents, assignedShiftsByResident }) => residents.map(r => ({
+  ...r,
+  assignedShifts: assignedShiftsByResident[r.name],
+}))
