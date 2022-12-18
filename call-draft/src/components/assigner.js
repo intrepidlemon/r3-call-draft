@@ -12,7 +12,7 @@ const Assigner = ({ date, shift }) => {
   const [open, setOpen] = useState(false)
   const { assignedShifts } = useEngine()
 
-  const workingResident = assignedShifts[date.toMillis()][shift]
+  const workingResident = assignedShifts[date.toISO()] && assignedShifts[date.toISO()][shift]
 
   if (open) {
     return <Picker
