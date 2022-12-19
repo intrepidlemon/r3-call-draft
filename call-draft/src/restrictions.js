@@ -16,6 +16,20 @@ export const queryBlackoutDays = ({ blackout }) => weekend => shift =>
   true
 )
 
+export const queryPreferNotDays = ({ preferNot }) => weekend => shift =>
+  preferNot.reduce((okay, pn) =>
+  okay &&
+  !sameDay(weekend, pn),
+  true
+)
+
+export const queryPreferToWorkDays = ({ preferToWork }) => weekend => shift =>
+  preferToWork.reduce((containsDay, ptw) =>
+  containsDay ||
+  sameDay(weekend, ptw),
+  false
+)
+
 // shift conflicts with another shift that day at a different location
 export const querySameDay = ({ assignedShifts }) => weekend => shift =>
   assignedShifts.reduce((okay, s) =>
@@ -209,4 +223,9 @@ export const hardRestrictions = [
 
 export const softRestrictions = [
   queryBlackoutDays,
+  queryPreferNotDays,
+]
+
+export const preferToWorkDays = [
+  queryPreferToWorkDays
 ]
