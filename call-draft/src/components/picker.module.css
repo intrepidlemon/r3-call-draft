@@ -64,22 +64,24 @@
   opacity: 0.5;
 }
 
-.soft_restricted .constraints {
-  background: #ff8243;
-}
-
-.hard_restricted .constraints {
-  background: lightpink;
-}
-
 .constraints {
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
-  margin-left: 1rem;
-  padding: 0.3rem 0.5rem;
-  border-radius: 1rem;
-  opacity: 0.7;
 }
 
+.constraints > span {
+  display: inline-block;
+  margin-left: 0.2rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 1rem;
+}
+
+.hard_restricted .constraints > span {
+  background: lightpink;
+}
+
+.soft_restricted .constraints > span {
+  background: #ff8243;
+}

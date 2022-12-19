@@ -189,15 +189,23 @@ export const getConstraintsForResidents = restrictions => residents => day => sh
     ]
   ))
 
-export const getAllUnrestrictedResidentsPerShift = shifts => restrictions => residents =>
+export const getFlatListOfShifts = shifts =>
   shifts.map(shift => {
-    const neededShifts = Object.keys(shift).filter(k => k !== "date" && shift[k])
+    const neededShifts = Object.keys(shift).filter(k => k !== "date" && shift[k] === "1")
     return neededShifts.map(shiftName => ({
       date: shift.date,
       shift: shiftName,
-      availableResidents: getUnrestrictedResidents(restrictions)(residents)(shift.date)(shiftName),
     }))
-  })
+  }).flat()
+
+export const getUnfilledShifts = shifts => assignedShifts => shifts.filter(s => assignedShifts[s.date][s.shift] === undefined)
+
+export const getAllUnrestrictedResidentsPerShift = flatShifts => restrictions => residents =>
+  flatShifts.map(shift => ({
+      date: shift.date,
+      shift: shift.shift,
+      availableResidents: getUnrestrictedResidents(restrictions)(residents)(shift.date)(shift.shift),
+  }))
 
 export const hardRestrictions = [
   queryNFWeekends,
@@ -217,11 +225,12 @@ export const hardRestrictions = [
   queryBelowAggregateNormalDayFloatCap,
   queryBelowAggregateHolidayDayFloatCap,
   queryBelowBodyAggregateCap,
-  queryBelowTotalCap
+  queryBelowTotalCap,
+
+  queryBlackoutDays,
 ]
 
 export const softRestrictions = [
-  queryBlackoutDays,
   queryPreferNotDays,
 ]
 
