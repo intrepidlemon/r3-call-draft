@@ -27,3 +27,7 @@
 
 .even {
 }
+
+thead tr > * + * {
+  text-align: center;
+}

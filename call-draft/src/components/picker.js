@@ -1,9 +1,18 @@
 import React, { useRef, useState } from 'react'
+import { DateTime } from 'luxon'
 import { TiWaves } from 'react-icons/ti'
 
 import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
 import { useOnClickOutside } from '../react-utils'
-import { getUnrestrictedResidents, getConstraintsForResidents, hardRestrictions, softRestrictions } from '../restrictions'
+import {
+  getUnrestrictedResidents,
+  getConstraintsForResidents,
+  hardRestrictions,
+  softRestrictions,
+  preferToWorkFilters,
+  mapConstraintToMessage,
+  splitResidents,
+} from '../restrictions'
 
 import styles from './picker.module.css'
 
@@ -15,29 +24,6 @@ const Picker = ({ assigned, date, shift, close }) => {
 
   const [activeResident, setActiveResident] = useState('');
 
-
-  const mapConstraintToMessage = {
-    "queryNFWeekends": "Shift is adjacent to an assigned night float week. ",
-    "queryBlackoutDays": "Shift is on resident's blackout day. ",
-    "querySameDay": "Shift conflicts with another shift that day at a different location. ",
-    "queryCHOP": "Shift is between two assigned CHOP weeks. ",
-    "queryBelowHUPHolidayDayFloatCap": "Resident is at maximum number of HUP holiday day float shifts. ",
-    "queryBelowHUPDayFloatCap": "Resident is at maximum number of HUP weekend day float shifts. ",
-    "queryBelowPAHHolidayDayFloatCap": "Resident is at maximum number of PAH holiday day float shifts. ",
-    "queryBelowPAHDayFloatCap": "Resident is at maximum number of PAH weekend day float shifts. ",
-    "queryBelowBodyHolidayCap": "Resident is at maximum number of Body holiday day float shifts. ",
-    "queryBelowBodyCap": "Resident is at maximum number of Body weekend day float shifts. ",
-    "queryBelowHUPHolidayNightFloatCap": "Resident is at maximum number of HUP holiday night float shifts. ",
-    "queryBelowHUPNightFloatCap": "Resident is at maximum number of HUP weekend night float shifts. ",
-    "queryBelowPAHHolidayNightFloatCap": "Resident is at maximum number of PAH holiday night float shifts. ",
-    "queryBelowPAHNightFloatCap": "Resident is at maximum number of PAH weekend night float shifts. ",
-    "queryBelowAggregateNightFloatCap": "Resident is at maximum number of night float shifts. ",
-    "queryBelowAggregateNormalDayFloatCap": "Resident is at maximum number of weekend day float shifts. ",
-    "queryBelowAggregateHolidayDayFloatCap": "Resident is at maximum number of holiday day float shifts. ",
-    "queryBelowBodyAggregateCap": "Resident is at maximum number of body day float shifts. ",
-    "queryBelowTotalCap": "Resident is at maximum number of shifts. "
-  }
-
   const constraintsToErrorMessage = (constraintsForResident) => {
     let constraints = Object.keys(
       Object.fromEntries(Object.entries(constraintsForResident).filter(([k,v]) => !v)))
@@ -45,45 +31,79 @@ const Picker = ({ assigned, date, shift, close }) => {
     return errorMessages.join('')
   }
 
-
-  const HoverText = ({errorMessage}) => {
-  return (
-    <>
-      <div> {errorMessage} </div>
-    </>
-  );
-};
-
   useOnClickOutside(ref, close)
-  // should just filter based off of residentConstraints but I am currently too lazy and it is trivial
-  const unrestrictedResidents = getUnrestrictedResidents(softRestrictions)(residents)(date)(shift)
-  const residentConstraints = getConstraintsForResidents(hardRestrictions)(residents)(date)(shift)
+  const hardConstraints = getConstraintsForResidents(hardRestrictions)(residents)(date)(shift)
+  const {preferredToWork, neutral, softRestricted, hardRestricted} = splitResidents(residents)(date)(shift)
+
+  const assignResident = name => () => {
+      close()
+      dispatch({
+      type: "assignShift",
+      data: {
+        name: name,
+        shift,
+        date,
+      }})
+    }
 
   return <div className={styles.parent}>
     <TiWaves/>
     <div ref={ref} className={styles.picker}>
-      { unrestrictedResidents.map(r =>
-        <div key={r.name}>
-          <button
-            onMouseOver={() => setActiveResident(r.name)} onMouseOut={() => setActiveResident('')}
-            onClick={() => {
-              close()
-              dispatch({
-              type: "assignShift",
-              data: {
-                name: r.name,
-                shift,
-                date,
-              }})
-            }}
-          >
-            {r.name}
-          </button>
+      <h3>{date.toLocaleString(DateTime.DATE_HUGE)} – { shift }</h3>
+      <div className={styles.container}>
+        <div className={styles.left}>
+          <h4>Prefer to work</h4>
+          <div className={styles.preferred}>
+            { preferredToWork.map(r => <Resident
+              name={r.name}
+              constraints={r.preferred}
+              assign={assignResident(r.name)}
+            />)}
+          </div>
+          <h4>Neutral</h4>
+          <div className={styles.neutral}>
+            { neutral.map(r => <Resident
+              name={r.name}
+              constraints={r.constraints}
+              assign={assignResident(r.name)}
+            />)}
+          </div>
         </div>
-      )}
-      {activeResident && <HoverText errorMessage={constraintsToErrorMessage(residentConstraints[activeResident])} />}
+        <div className={styles.right}>
+          <h4>Preferred not</h4>
+          <div className={styles.soft_restricted}>
+              { softRestricted.map(r => <Resident
+                name={r.name}
+                constraints={r.constraints}
+                assign={assignResident(r.name)}
+              />)}
+          </div>
+          <h4> Restricted </h4>
+          <div className={styles.hard_restricted}>
+              { hardRestricted.map(r => <Resident
+                name={r.name}
+                constraints={r.constraints}
+                assign={assignResident(r.name)}
+              />)}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 }
+
+const Resident = ({ name, constraints, assign }) =>
+<div className={styles.resident}>
+  <button
+    onClick={assign}
+  >
+    {name}
+  </button>
+  <div className={styles.constraints}>
+    { constraints.map(c =>
+      <span> {mapConstraintToMessage[c]} </span>
+    )}
+  </div>
+</div>
 
 export default Picker
