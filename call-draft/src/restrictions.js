@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isHoliday } from './utils'
 
 // shift is adjacent to an assigned night float week
@@ -250,8 +249,8 @@ export const mapConstraintToMessage = {
     "queryBelowAggregateHolidayDayFloatCap": "Max holiday shifts",
     "queryBelowBodyAggregateCap": "Max body shifts",
     "queryBelowTotalCap": "Max shifts",
-    "queryPreferNotDays": "Preferred to not work",
-    "queryPreferToWorkDays": "Preferred to work",
+    "queryPreferNotDays": "Prefer to not work",
+    "queryPreferToWorkDays": "Prefer to work",
   }
 
 export const splitResidents = residents => date => shift => {
