@@ -7,6 +7,8 @@ import Assigner from './assigner'
 
 import styles from './calendar.module.css'
 
+import { weekNumber } from '../utils'
+
 const Calendar = () => {
   const { requiredShifts } = useEngine()
 
@@ -27,7 +29,9 @@ const Calendar = () => {
 }
 
 const Row = ({ row }) => {
-  return <tr >
+  return <tr
+    className={ (weekNumber(row["date"]) % 2) === 1 ? styles.odd : styles.even }
+  >
     {
       Object.keys(row).map(k => <Cell
         key={k}

@@ -21,3 +21,9 @@
   padding: 0;
 }
 
+.odd {
+  background: #eee;
+}
+
+.even {
+}
