@@ -1,15 +1,10 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { DateTime } from 'luxon'
 import { TiWaves } from 'react-icons/ti'
 
 import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
 import { useOnClickOutside } from '../react-utils'
 import {
-  getUnrestrictedResidents,
-  getConstraintsForResidents,
-  hardRestrictions,
-  softRestrictions,
-  preferToWorkFilters,
   mapConstraintToMessage,
   splitResidents,
 } from '../restrictions'
@@ -22,17 +17,7 @@ const Picker = ({ assigned, date, shift, close }) => {
   const residents = residentsView(engine)
   const dispatch = useEngineDispatch()
 
-  const [activeResident, setActiveResident] = useState('');
-
-  const constraintsToErrorMessage = (constraintsForResident) => {
-    let constraints = Object.keys(
-      Object.fromEntries(Object.entries(constraintsForResident).filter(([k,v]) => !v)))
-    let errorMessages = constraints.map((constraint) => mapConstraintToMessage[constraint])
-    return errorMessages.join('')
-  }
-
   useOnClickOutside(ref, close)
-  const hardConstraints = getConstraintsForResidents(hardRestrictions)(residents)(date)(shift)
   const {preferredToWork, neutral, softRestricted, hardRestricted} = splitResidents(residents)(date)(shift)
 
   const assignResident = name => () => {
