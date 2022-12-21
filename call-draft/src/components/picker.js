@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { TiWaves } from 'react-icons/ti'
 
-import { useEngine, useEngineDispatch } from '../engine/context'
+import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
 import { useOnClickOutside } from '../react-utils'
 import { getUnrestrictedResidents, getConstraintsForResidents, hardRestrictions, softRestrictions } from '../restrictions'
 
@@ -9,7 +9,8 @@ import styles from './picker.module.css'
 
 const Picker = ({ assigned, date, shift, close }) => {
   const ref = useRef()
-  const { residents } = useEngine()
+  const engine = useEngine()
+  const residents = residentsView(engine)
   const dispatch = useEngineDispatch()
 
   const [activeResident, setActiveResident] = useState('');
@@ -34,7 +35,7 @@ const Picker = ({ assigned, date, shift, close }) => {
     "queryBelowAggregateNormalDayFloatCap": "Resident is at maximum number of weekend day float shifts. ",
     "queryBelowAggregateHolidayDayFloatCap": "Resident is at maximum number of holiday day float shifts. ",
     "queryBelowBodyAggregateCap": "Resident is at maximum number of body day float shifts. ",
-    "queryBelowTotalCap": "Resident is at maximum number of shifts. " 
+    "queryBelowTotalCap": "Resident is at maximum number of shifts. "
   }
 
   const constraintsToErrorMessage = (constraintsForResident) => {

@@ -5,7 +5,11 @@ export const parseDate = d => DateTime.fromJSDate(
   { zone: "utc" }
 ).setZone("America/New_York", { keepLocalTime: true })
 
-export const sameDay = (d1, d2) => d1.hasSame(d2, "day")
+export const coerceLuxon = d => {
+  return typeof d === "string" ? DateTime.fromISO(d) : d
+}
+
+export const sameDay = (d1, d2) => coerceLuxon(d1).hasSame(coerceLuxon(d2), "day")
 
 export const standardDate = d => DateTime.fromISO(d.toISOString().substring(0, 10))
 

@@ -63,8 +63,15 @@ export const EngineProvider = ({ children }) => {
     }
 
     downloadShifts()
-    downloadRotations().then(downloadPreferences)
+      .then(downloadRotations)
+      .then(downloadPreferences)
   }, [dispatch])
+
+  const { assignedShifts, assignedShiftsByResident } = engine
+  useEffect(() => {
+    localStorage.setItem("assignedShifts", JSON.stringify(assignedShifts));
+    localStorage.setItem("assignedShiftsByResident", JSON.stringify(assignedShiftsByResident));
+  }, [assignedShifts, assignedShiftsByResident, dispatch]);
 
   return <EngineContext.Provider value={engine}>
     <EngineDispatchContext.Provider value={dispatch}>
@@ -74,17 +81,13 @@ export const EngineProvider = ({ children }) => {
 }
 
 export const useEngine = () => useContext(EngineContext)
-
 export const useEngineDispatch = () => useContext(EngineDispatchContext)
 
 const engineReducer = (engine, action) => {
   switch (action.type) {
+
     case 'addRequiredShifts': {
       engine.requiredShifts = action.data
-      engine.assignedShifts = Object.fromEntries(action.data.map(d => [
-        d.date.toMillis(),
-        Object.fromEntries(Object.keys(d).map(k =>[k, undefined]))
-      ]))
       break;
     }
 
@@ -99,8 +102,12 @@ const engineReducer = (engine, action) => {
       engine.residents = action.data.map(d => ({
         ...d,
         ...engine.rotations.find(({ name }) => name === d.name),
-        assignedShifts: [], // where default assigned locations are born
       }))
+
+      const { assignedShifts } = engine
+      if (Object.keys(assignedShifts).length === 0) {
+        resetAllShifts(engine)
+      }
       break;
     }
 
@@ -109,21 +116,27 @@ const engineReducer = (engine, action) => {
 
       const { date, shift, name } = action.data
 
-      const ri = engine.residents.findIndex(r => r.name === name)
-      engine.residents[ri].assignedShifts.push({ date, shift })
+      engine.assignedShiftsByResident[name].push({ date: date.toISO(), shift })
 
-      engine.assignedShifts[date.toMillis()][shift] = name
+      engine.assignedShifts[date.toISO()][shift] = name
       break;
     }
     case 'clearShift': {
       clearShift(engine, action)
       break;
     }
+
+    case 'resetShifts': {
+      resetAllShifts(engine)
+      break;
+    }
+
     default: {
       throw Error('Unknown action: ' + action.type)
     }
   }
 }
+
 
 const initialEngine = {
   requiredShifts: [],
@@ -131,17 +144,40 @@ const initialEngine = {
   preferences: [],
   residents: [],
 
-  assignedShifts: {},
+  assignedShifts: JSON.parse(localStorage.getItem("assignedShifts")) || {},
+  assignedShiftsByResident: JSON.parse(localStorage.getItem("assignedShiftsByResident")) || {},
 }
+console.log(JSON.parse(localStorage.getItem("assignedShifts")))
 
 // reducers
 
 const clearShift = (engine, action) => {
   const { date, shift } = action.data
 
-  engine.residents.forEach(r => {
-    r.assignedShifts = r.assignedShifts.filter(s => !(sameDay(s.date, date) && shift === s.shift))
+  Object.keys(engine.assignedShiftsByResident).forEach(k => {
+    engine.assignedShiftsByResident[k] = engine.assignedShiftsByResident[k].filter(s => !(sameDay(s.date, date) && shift === s.shift))
   })
 
-  delete engine.assignedShifts[date.toMillis()][shift]
+  delete engine.assignedShifts[date.toISO()][shift]
 }
+
+const resetAllShifts = engine => {
+
+  const { residents, requiredShifts } = engine
+
+  residents.forEach(r => {
+    engine.assignedShiftsByResident[r.name] = []
+  })
+
+  engine.assignedShifts = Object.fromEntries(requiredShifts.map(s => [
+    s.date.toISO(),
+    Object.fromEntries(Object.keys(s).map(k =>[k, undefined]))
+  ]))
+
+}
+
+// views
+export const residentsView = ({ residents, assignedShiftsByResident }) => residents.map(r => ({
+  ...r,
+  assignedShifts: assignedShiftsByResident[r.name],
+}))

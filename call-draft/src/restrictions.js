@@ -129,9 +129,6 @@ export const queryBelowPAHNightFloatCap = ( resident ) => weekend => shift => {
   return true
 }
 
-
-
-
 export const queryBelowAggregateNightFloatCap = ( resident ) => weekend => shift => {
   if (shift.includes("NF"))
     return resident.assignedShifts.filter(s => s.shift.includes("NF")).length < 5
@@ -156,13 +153,8 @@ export const queryBelowBodyAggregateCap = ( resident ) => weekend => shift => {
   return true
 }
 
-
-
 export const queryBelowTotalCap = ( resident ) => weekend => shift =>
   resident.assignedShifts.length < 19
-
-
-
 
 export const getUnrestrictedResidents = restrictions => residents => day => shift =>
   residents.filter(
@@ -182,8 +174,7 @@ export const getConstraintsForResidents = restrictions => residents => day => sh
         ]
       ))
     ]
-  )
-)
+  ))
 
 export const getAllUnrestrictedResidentsPerShift = shifts => restrictions => residents =>
   shifts.map(shift => {
@@ -197,7 +188,6 @@ export const getAllUnrestrictedResidentsPerShift = shifts => restrictions => res
 
 export const hardRestrictions = [
   queryNFWeekends,
-  queryBlackoutDays,
   querySameDay,
   queryCHOP,
   queryBelowHUPHolidayDayFloatCap,
@@ -218,4 +208,5 @@ export const hardRestrictions = [
 ]
 
 export const softRestrictions = [
+  queryBlackoutDays,
 ]
