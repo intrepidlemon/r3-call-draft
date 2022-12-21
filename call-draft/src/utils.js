@@ -36,4 +36,12 @@ export const mod = function (n, m) {
 
 export const isHoliday = (day) => day.weekday !== 6 && day.weekday !== 7
 
+export const weekNumber = day => {
+  const date = coerceLuxon(day)
+  if (date.weekday < 4) {
+    return date.weekNumber - 1
+  }
+  return date.weekNumber
+}
+
 //export const getAssociatedDays = (d) => d

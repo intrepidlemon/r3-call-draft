@@ -16,6 +16,20 @@ export const queryBlackoutDays = ({ blackout }) => weekend => shift =>
   true
 )
 
+export const queryPreferNotDays = ({ preferNot }) => weekend => shift =>
+  preferNot.reduce((okay, pn) =>
+  okay &&
+  !sameDay(weekend, pn),
+  true
+)
+
+export const queryPreferToWorkDays = ({ preferToWork }) => weekend => shift =>
+  preferToWork.reduce((containsDay, ptw) =>
+  containsDay ||
+  sameDay(weekend, ptw),
+  false
+)
+
 // shift conflicts with another shift that day at a different location
 export const querySameDay = ({ assignedShifts }) => weekend => shift =>
   assignedShifts.reduce((okay, s) =>
@@ -209,4 +223,70 @@ export const hardRestrictions = [
 
 export const softRestrictions = [
   queryBlackoutDays,
+  queryPreferNotDays,
 ]
+
+export const preferToWorkFilters = [
+  queryPreferToWorkDays
+]
+
+export const mapConstraintToMessage = {
+    "queryNFWeekends": "Night float week",
+    "queryBlackoutDays": "Blackout",
+    "querySameDay": "Same day shift",
+    "queryCHOP": "CHOP week",
+    "queryBelowHUPHolidayDayFloatCap": "Max HUP holiday day shifts",
+    "queryBelowHUPDayFloatCap": "Max HUP day shifts",
+    "queryBelowPAHHolidayDayFloatCap": "Max PAH holiday day shifts",
+    "queryBelowPAHDayFloatCap": "Max PAH day shifts",
+    "queryBelowBodyHolidayCap": "Max body shifts",
+    "queryBelowBodyCap": "Max body shifts",
+    "queryBelowHUPHolidayNightFloatCap": "Max HUP holiday night shifts",
+    "queryBelowHUPNightFloatCap": "Max HUP night shifts",
+    "queryBelowPAHHolidayNightFloatCap": "Max PAH holiday night shifts",
+    "queryBelowPAHNightFloatCap": "Max PAH night shifts",
+    "queryBelowAggregateNightFloatCap": "Max night shifts",
+    "queryBelowAggregateNormalDayFloatCap": "Max day shifts",
+    "queryBelowAggregateHolidayDayFloatCap": "Max holiday shifts",
+    "queryBelowBodyAggregateCap": "Max body shifts",
+    "queryBelowTotalCap": "Max shifts",
+    "queryPreferNotDays": "Preferred to not work",
+    "queryPreferToWorkDays": "Preferred to work",
+  }
+
+export const splitResidents = residents => date => shift => {
+
+  const hardConstraints = getConstraintsForResidents(hardRestrictions)(residents)(date)(shift)
+  const softConstraints = getConstraintsForResidents(softRestrictions)(residents)(date)(shift)
+  const preferred = getConstraintsForResidents(preferToWorkFilters)(residents)(date)(shift)
+
+  const hardRestricted = Object.keys(hardConstraints).map(name => ({
+    name,
+    constraints: Object.keys(hardConstraints[name]).filter(k => !hardConstraints[name][k])
+  })).filter(o => o.constraints.length > 0)
+  const hardRestrictedNames = hardRestricted.map(o => o.name)
+
+  const softRestricted = Object.keys(softConstraints).map(name => ({
+    name,
+    constraints: Object.keys(softConstraints[name]).filter(k => !softConstraints[name][k])
+  })).filter(o => o.constraints.length > 0 && hardRestrictedNames.find(q => q === o.name) === undefined)
+  const softRestrictedNames = softRestricted.map(o => o.name)
+
+  const preferredToWork = Object.keys(preferred).map(name => ({
+    name,
+    preferred: Object.keys(preferred[name]).filter(k => preferred[name][k])
+  })).filter(
+    o => o.preferred.length > 0
+    && hardRestrictedNames.find(q => q === o.name) === undefined
+    && softRestrictedNames.find(q => q === o.name) === undefined
+  )
+  const preferredToWorkNames = preferredToWork.map(o => o.name)
+
+  const neutral = residents.filter(r =>
+    hardRestrictedNames.find(q => q === r.name) === undefined
+    && softRestrictedNames.find(q => q === r.name) === undefined
+    && preferredToWorkNames.find(q => q === r.name) === undefined
+  ).map(r => ({name: r.name, constraints: [] }))
+
+  return {preferredToWork, neutral, softRestricted, hardRestricted}
+}

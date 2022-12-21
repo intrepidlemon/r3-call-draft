@@ -147,7 +147,6 @@ const initialEngine = {
   assignedShifts: JSON.parse(localStorage.getItem("assignedShifts")) || {},
   assignedShiftsByResident: JSON.parse(localStorage.getItem("assignedShiftsByResident")) || {},
 }
-console.log(JSON.parse(localStorage.getItem("assignedShifts")))
 
 // reducers
 

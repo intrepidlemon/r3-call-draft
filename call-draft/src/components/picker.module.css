@@ -1,5 +1,4 @@
 .parent {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,13 +7,79 @@
 }
 
 .picker {
-  position: absolute;
+  position: fixed;
   height: auto;
-  top: 18px;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
 
   display: flex;
   flex-direction: column;
 
-  background: lightpink;
+  border: 1px solid black;
+  background: white;
   padding: 1rem;
 }
+
+.container {
+  display: flex;
+}
+
+.left, .right {
+  flex-grow: 1;
+}
+
+.resident {
+  display: flex;
+  flex-direction: row;
+}
+
+.resident button {
+  width: 10rem;
+  padding: 0.1rem 1rem;
+  border-radius: 0rem;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.resident button:hover {
+  box-shadow: 0 0.5em 0.2em -0.4em #888;
+  transform: translateY(-0.25em);
+}
+
+.resident button:active {
+  box-shadow: 0 0.5em 0.2em -0.4em #888;
+  transform: translateY(0em);
+  box-shadow: none;
+}
+
+.soft_restricted > * + *,
+.neutral > * + *,
+.preferred > * + *,
+.hard_restricted > * + * {
+  margin-top: 0.5rem;
+}
+
+.hard_restricted {
+  opacity: 0.5;
+}
+
+.soft_restricted .constraints {
+  background: #ff8243;
+}
+
+.hard_restricted .constraints {
+  background: lightpink;
+}
+
+.constraints {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  margin-left: 1rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 1rem;
+  opacity: 0.7;
+}
+

@@ -21,3 +21,13 @@
   padding: 0;
 }
 
+.odd {
+  background: #eee;
+}
+
+.even {
+}
+
+thead tr > * + * {
+  text-align: center;
+}
