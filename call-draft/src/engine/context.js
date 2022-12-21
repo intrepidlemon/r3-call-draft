@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect } from 'react'
 import { useImmerReducer } from 'use-immer'
+import { DateTime } from 'luxon'
 import { freeze } from 'immer'
 
 import { cleanResidentCSV, extractRotations } from '../csv-handling'
-import { parseDate, sameDay } from '../utils'
+import { sameDay } from '../utils'
 
 import Papa from 'papaparse'
 
@@ -28,7 +29,7 @@ export const EngineProvider = ({ children }) => {
         .then(t => Papa.parse(t, {header: true}).data)
       const parsedData = data.map(d => ({
         ...d,
-        "date": parseDate(d.date),
+        "date": DateTime.fromISO(d.date),
       }))
       dispatch({
         type: "addRequiredShifts",

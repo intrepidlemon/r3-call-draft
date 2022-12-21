@@ -1,9 +1,8 @@
 import { DateTime } from 'luxon'
 
-export const parseDate = d => DateTime.fromJSDate(
-  new Date(Date.parse(d.replace("[", "").replace("]", ""))),
-  { zone: "utc" }
-).setZone("America/New_York", { keepLocalTime: true })
+export const parseFormsDate = d => DateTime.fromFormat(
+    d.replace(" ", "").replace("[", "").replace("]", ""),
+    "M/d/yyyy")
 
 export const coerceLuxon = d => {
   return typeof d === "string" ? DateTime.fromISO(d) : d
