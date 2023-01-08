@@ -85,3 +85,7 @@
 .soft_restricted .constraints > span {
   background: #ff8243;
 }
+
+.preferred .constraints > span {
+  background: lightgreen;
+}
