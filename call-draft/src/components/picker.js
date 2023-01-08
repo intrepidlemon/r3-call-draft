@@ -34,7 +34,15 @@ const Picker = ({ assigned, date, shift, close }) => {
   return <div className={styles.parent}>
     <TiWaves/>
     <div ref={ref} className={styles.picker}>
-      <h3>{date.toLocaleString(DateTime.DATE_HUGE)} – { shift }</h3>
+      <h3>
+        {date.toLocaleString(DateTime.DATE_HUGE)} – { shift }
+        { assigned && <span>
+          - { assigned } &nbsp;
+          <button onClick={() => dispatch({ type: "clearShift", data: { date, shift }})}>
+            clear
+          </button>
+        </span>}
+      </h3>
       <div className={styles.container}>
         <div className={styles.left}>
           <h4>Prefer to work</h4>

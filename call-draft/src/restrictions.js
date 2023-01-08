@@ -253,7 +253,7 @@ export const mapConstraintToMessage = {
     "queryNFWeekends": "Night float week",
     "queryBlackoutDays": "Blackout",
     "querySameDay": "Same day shift",
-    "querySaturdayNightCallWeekend": "Shift is on same weekend as a night saturday night call weekend",
+    "querySaturdayNightCallWeekend": "Night saturday call <> shift",
     "queryCHOP": "CHOP week",
     "queryBelowHUPHolidayDayFloatCap": "Max HUP holiday day shifts",
     "queryBelowHUPDayFloatCap": "Max HUP day shifts",
