@@ -37,6 +37,17 @@ export const querySameDay = ({ assignedShifts }) => date => shift =>
   true
 )
 
+// shift is on the same day as a saturday night call
+export const querySaturdayNightCallWeekend = ({ assignedShifts }) => date => shift =>
+  assignedShifts.reduce((okay, s) =>
+  okay &&
+    !(
+      (s.shift.includes("NF") && sameDay(getPriorSaturday(date), s.date))
+      || (shift.includes("NF") && sameDay(getPriorSaturday(s.date), date))
+    ),
+  true
+)
+
 // day shift is adjacent to a night shift
 // TODO: IMPLEMENT THIS
 
@@ -210,6 +221,7 @@ export const getAllUnrestrictedResidentsPerShift = flatShifts => restrictions =>
 export const hardRestrictions = [
   queryNFWeekends,
   querySameDay,
+  querySaturdayNightCallWeekend,
   queryCHOP,
   queryBelowHUPHolidayDayFloatCap,
   queryBelowHUPDayFloatCap,
@@ -226,7 +238,6 @@ export const hardRestrictions = [
   queryBelowAggregateHolidayDayFloatCap,
   queryBelowBodyAggregateCap,
   queryBelowTotalCap,
-
   queryBlackoutDays,
 ]
 
@@ -242,6 +253,7 @@ export const mapConstraintToMessage = {
     "queryNFWeekends": "Night float week",
     "queryBlackoutDays": "Blackout",
     "querySameDay": "Same day shift",
+    "querySaturdayNightCallWeekend": "Shift is on same weekend as a night saturday night call weekend",
     "queryCHOP": "CHOP week",
     "queryBelowHUPHolidayDayFloatCap": "Max HUP holiday day shifts",
     "queryBelowHUPDayFloatCap": "Max HUP day shifts",
