@@ -16,16 +16,18 @@ const Calendar = () => {
     return null
   }
 
-  return <table className={styles.table}>
-    <thead>
-      <tr>
-        { Object.keys(requiredShifts[0]).map(k => <th key={k}>{k}</th>)}
-      </tr>
-    </thead>
-    <tbody>
-      { requiredShifts.map(r => <Row key={r.date.toMillis()} row={r} />) }
-    </tbody>
-  </table>
+  return <div className={styles.calendar}>
+    <table className={styles.table}>
+      <thead>
+        <tr>
+          { Object.keys(requiredShifts[0]).map(k => <th key={k}>{k}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        { requiredShifts.map(r => <Row key={r.date.toMillis()} row={r} />) }
+      </tbody>
+    </table>
+  </div>
 }
 
 const Row = ({ row }) => {

@@ -36,15 +36,16 @@ const Picker = ({ assigned, date, shift, close }) => {
     <div ref={ref} className={styles.picker}>
       <h3>
         {date.toLocaleString(DateTime.DATE_HUGE)} – { shift }
-        { assigned && <span>
-          - { assigned } &nbsp;
-          <button onClick={() => dispatch({ type: "clearShift", data: { date, shift }})}>
-            clear
-          </button>
-        </span>}
       </h3>
+        { assigned &&
+          <div>
+            assigned: { assigned } &nbsp;
+            <button onClick={() => dispatch({ type: "clearShift", data: { date, shift }})}>
+              clear
+            </button>
+          </div>
+        }
       <div className={styles.container}>
-        <div className={styles.left}>
           <h4>Prefer to work</h4>
           <div className={styles.preferred}>
             { preferredToWork.map(r => <Resident
@@ -63,8 +64,6 @@ const Picker = ({ assigned, date, shift, close }) => {
               assign={assignResident(r.name)}
             />)}
           </div>
-        </div>
-        <div className={styles.right}>
           <h4>Preferred not</h4>
           <div className={styles.soft_restricted}>
               { softRestricted.map(r => <Resident
@@ -82,7 +81,6 @@ const Picker = ({ assigned, date, shift, close }) => {
                 assign={assignResident(r.name)}
               />)}
           </div>
-        </div>
       </div>
     </div>
   </div>

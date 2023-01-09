@@ -1,4 +1,5 @@
 .list {
-  width: 30vw;
+  width: 40vw;
   height: 100vh;
+  overflow: auto;
 }
