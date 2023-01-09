@@ -48,6 +48,7 @@ const Picker = ({ assigned, date, shift, close }) => {
           <h4>Prefer to work</h4>
           <div className={styles.preferred}>
             { preferredToWork.map(r => <Resident
+              key={r.name}
               name={r.name}
               constraints={r.preferred}
               assign={assignResident(r.name)}
@@ -56,6 +57,7 @@ const Picker = ({ assigned, date, shift, close }) => {
           <h4>Neutral</h4>
           <div className={styles.neutral}>
             { neutral.map(r => <Resident
+              key={r.name}
               name={r.name}
               constraints={r.constraints}
               assign={assignResident(r.name)}
@@ -66,6 +68,7 @@ const Picker = ({ assigned, date, shift, close }) => {
           <h4>Preferred not</h4>
           <div className={styles.soft_restricted}>
               { softRestricted.map(r => <Resident
+                key={r.name}
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
