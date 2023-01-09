@@ -173,7 +173,7 @@ export const queryBelowAggregateHolidayDayFloatCap = ( resident ) => date => shi
 
 export const queryBelowBodyAggregateCap = ( resident ) => date => shift => {
   if (shift.includes("Body"))
-    return resident.assignedShifts.filter(s => s.shift.includes("Body")).length < 2
+    return resident.assignedShifts.filter(s => s.shift.includes("Body")).length < 3
   return true
 }
 
@@ -259,15 +259,15 @@ export const mapConstraintToMessage = {
     "queryBelowHUPDayFloatCap": "Max HUP day shifts",
     "queryBelowPAHHolidayDayFloatCap": "Max PAH holiday day shifts",
     "queryBelowPAHDayFloatCap": "Max PAH day shifts",
-    "queryBelowBodyHolidayCap": "Max body shifts",
-    "queryBelowBodyCap": "Max body shifts",
+    "queryBelowBodyHolidayCap": "Max holiday body shifts",
+    "queryBelowBodyCap": "Max weekend body shifts",
     "queryBelowHUPHolidayNightFloatCap": "Max HUP holiday night shifts",
     "queryBelowHUPNightFloatCap": "Max HUP night shifts",
     "queryBelowPAHHolidayNightFloatCap": "Max PAH holiday night shifts",
     "queryBelowPAHNightFloatCap": "Max PAH night shifts",
     "queryBelowAggregateNightFloatCap": "Max night shifts",
     "queryBelowAggregateNormalDayFloatCap": "Max day shifts",
-    "queryBelowAggregateHolidayDayFloatCap": "Max holiday shifts",
+    "queryBelowAggregateHolidayDayFloatCap": "Max holiday day shifts",
     "queryBelowBodyAggregateCap": "Max body shifts",
     "queryBelowTotalCap": "Max shifts",
     "queryPreferNotDays": "Prefer to not work",
