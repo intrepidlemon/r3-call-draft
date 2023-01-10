@@ -3,3 +3,7 @@
   height: 100vh;
   overflow: auto;
 }
+
+.refresh {
+  width: 100%;
+}
