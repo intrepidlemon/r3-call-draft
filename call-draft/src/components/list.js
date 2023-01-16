@@ -13,7 +13,7 @@ import styles from './list.module.css'
 
 const List = () => {
   const engine = useEngine()
-  const { requiredShifts, assignedShifts } = engine
+  const { holidays, requiredShifts, assignedShifts } = engine
 
   const [ list, setList ] = useState([])
 
@@ -22,11 +22,11 @@ const List = () => {
     const unfilledShifts = getUnfilledShifts(flatShifts)(assignedShifts)
     const residents = residentsView(engine)
 
-    const shiftsNeeded = getAllUnrestrictedResidentsPerShift(unfilledShifts)(hardRestrictions)(residents)
+    const shiftsNeeded = getAllUnrestrictedResidentsPerShift(unfilledShifts)(hardRestrictions)(residents, holidays)
     const sortedShiftsNeeded = shiftsNeeded.sort((a, b) => a.availableResidents.length - b.availableResidents.length)
 
     setList(sortedShiftsNeeded)
-  }, [requiredShifts, assignedShifts, engine])
+  }, [holidays, requiredShifts, assignedShifts, engine])
 
 
   if (Object.keys(assignedShifts).length === 0) {

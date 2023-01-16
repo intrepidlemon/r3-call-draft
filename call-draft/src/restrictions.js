@@ -72,17 +72,21 @@ const PerShiftCaps = {
     "DF HUP": 6,
     "DF PAH": 6,
     "Body Call": 2,
-    "NF HUP": 3,
-    "NF PAH": 3,
+    "NF HUP": 2,
+    "NF PAH": 2,
   },
 
   "HOLIDAY" : {
     "DF HUP": 3,
     "DF PAH": 3,
-    "Body Call": 2,
+    "Body Call": 1,
     "NF HUP": 1,
     "NF PAH": 1,
-  }
+  },
+  "AGGREGATE NF": 5,
+  "AGGREGATE DF": 13,
+  "AGGREGATE HOLIDAY DF": 3,
+  "AGGREGATE BODY": 3,
 }
 
 const queryBelowPerShiftCap = ( resident, holidays ) => date => shift => {
@@ -143,7 +147,7 @@ export const queryBelowHUPNightFloatCap = ( resident, holidays ) => date => shif
 
 export const queryBelowPAHHolidayNightFloatCap = ( resident, holidays ) => date => shift => {
   if (shift === "NF PAH" && isPartOfHolidayWeekend(holidays)(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
   return true
 }
 
@@ -155,35 +159,35 @@ export const queryBelowPAHNightFloatCap = ( resident, holidays ) => date => shif
 
 export const queryBelowAggregateNightFloatCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("NF"))
-    return resident.assignedShifts.filter(s => s.shift.includes("NF")).length < 5
+    return resident.assignedShifts.filter(s => s.shift.includes("NF")).length < PerShiftCaps["AGGREGATE NF"]
   return true
 }
 
 export const queryBelowAggregateNormalDayFloatCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("DF") && !isPartOfHolidayWeekend(holidays)(date))
-    return resident.assignedShifts.filter(s => !isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < 13
+    return resident.assignedShifts.filter(s => !isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < PerShiftCaps["AGGREGATE DF"]
   return true
 }
 
 export const queryBelowAggregateHolidayDayFloatCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("DF") && isPartOfHolidayWeekend(holidays)(date))
-    return resident.assignedShifts.filter(s => isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < 3
+    return resident.assignedShifts.filter(s => isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < PerShiftCaps["AGGREGATE HOLIDAY DF"]
   return true
 }
 
 export const queryBelowBodyAggregateCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("Body"))
-    return resident.assignedShifts.filter(s => s.shift.includes("Body")).length < 3
+    return resident.assignedShifts.filter(s => s.shift.includes("Body")).length < PerShiftCaps["AGGREGATE BODY"]
   return true
 }
 
 export const queryBelowTotalCap = ( resident, holidays ) => date => shift =>
   resident.assignedShifts.length < 19
 
-export const getUnrestrictedResidents = restrictions => residents => day => shift =>
+export const getUnrestrictedResidents = restrictions => (residents, holidays) => day => shift =>
   residents.filter(
     resident => restrictions.every(
-      restriction => restriction(resident)(day)(shift)
+      restriction => restriction(resident, holidays)(day)(shift)
     )
   )
 
@@ -211,11 +215,11 @@ export const getFlatListOfShifts = shifts =>
 
 export const getUnfilledShifts = shifts => assignedShifts => shifts.filter(s => assignedShifts[s.date][s.shift] === undefined)
 
-export const getAllUnrestrictedResidentsPerShift = flatShifts => restrictions => residents =>
+export const getAllUnrestrictedResidentsPerShift = flatShifts => restrictions => (residents, holidays) =>
   flatShifts.map(shift => ({
       date: shift.date,
       shift: shift.shift,
-      availableResidents: getUnrestrictedResidents(restrictions)(residents)(shift.date)(shift.shift),
+      availableResidents: getUnrestrictedResidents(restrictions)(residents, holidays)(shift.date)(shift.shift),
   }))
 
 export const hardRestrictions = [
