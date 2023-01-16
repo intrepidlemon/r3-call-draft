@@ -43,7 +43,7 @@ const Row = ({ name, shiftNames, shifts }) => {
   }, {})
   const holidayCounts = shifts.reduce((obj, s) => {
     const count = obj[s.shift] === undefined ? 0 : obj[s.shift]
-    if (isPartOfHolidayWeekend(holidays, s.date)) {
+    if (isPartOfHolidayWeekend(holidays)(s.date)) {
       obj[s.shift] = count + 1
     }
     return obj

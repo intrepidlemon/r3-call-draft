@@ -42,9 +42,9 @@ export const EngineProvider = ({ children }) => {
             if (i > 0) { holidayList.push(data[i - 1].date) }
             if (i > 1) { holidayList.push(data[i - 2].date) }
           // holiday falls on a Thursday or Friday
-          } else if (date.weekday > 3 && i < data.length - 2) {
+          } else if (date.weekday > 3) {
             if (i < data.length - 1) { holidayList.push(data[i + 1].date) }
-            if (i > data.length - 2) { holidayList.push(data[i + 2].date) }
+            if (i < data.length - 2) { holidayList.push(data[i + 2].date) }
           } else {
             console.log("Weird year. Holiday is on a Wednesday. Is that even a holiday?")
           }

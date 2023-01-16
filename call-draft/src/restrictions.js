@@ -69,16 +69,16 @@ export const queryCHOP = ({ CHOP }) => date => shift =>
 
 const PerShiftCaps = {
   "REGULAR" : {
-    "DF HUP": 8,
-    "DF PAH": 8,
+    "DF HUP": 6,
+    "DF PAH": 6,
     "Body Call": 2,
     "NF HUP": 3,
     "NF PAH": 3,
   },
 
   "HOLIDAY" : {
-    "DF HUP": 1,
-    "DF PAH": 1,
+    "DF HUP": 3,
+    "DF PAH": 3,
     "Body Call": 2,
     "NF HUP": 1,
     "NF PAH": 1,
@@ -167,7 +167,7 @@ export const queryBelowAggregateNormalDayFloatCap = ( resident, holidays ) => da
 
 export const queryBelowAggregateHolidayDayFloatCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("DF") && isPartOfHolidayWeekend(holidays)(date))
-    return resident.assignedShifts.filter(s => isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < 1
+    return resident.assignedShifts.filter(s => isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < 3
   return true
 }
 
