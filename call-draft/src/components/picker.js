@@ -14,7 +14,7 @@ import styles from './picker.module.css'
 const Picker = ({ assigned, date, shift, close }) => {
   const ref = useRef()
   const engine = useEngine()
-  const holidays = engine.holidays
+  const { holidays } = engine
   const residents = residentsView(engine)
   const dispatch = useEngineDispatch()
 
@@ -87,18 +87,34 @@ const Picker = ({ assigned, date, shift, close }) => {
   </div>
 }
 
-const Resident = ({ name, constraints, assign }) =>
-<div className={styles.resident}>
-  <button
-    onClick={assign}
-  >
-    {name}
-  </button>
-  <div className={styles.constraints}>
-    { constraints.map(c =>
-      <span> {mapConstraintToMessage[c]} </span>
-    )}
+const Resident = ({ name, constraints, assign }) => {
+
+  const dispatch = useEngineDispatch()
+
+  const setFocusResident = name => () => {
+      dispatch({
+      type: "setFocusResident",
+      data: {
+        name: name,
+      }})
+    }
+
+  return <div 
+    className={styles.resident}
+    onMouseEnter={setFocusResident(name)}
+    onMouseLeave={setFocusResident(null)}>
+    <button
+      onClick={assign}
+    >
+      {name}
+    </button>
+    <div className={styles.constraints}>
+      { constraints.map(c =>
+        <span> {mapConstraintToMessage[c]} </span>
+      )}
+    </div>
   </div>
-</div>
+}
+
 
 export default Picker

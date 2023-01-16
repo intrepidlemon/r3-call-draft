@@ -10,7 +10,8 @@ import Picker from './picker'
 
 const Assigner = ({ date, shift }) => {
   const [open, setOpen] = useState(false)
-  const { assignedShifts } = useEngine()
+  const { assignedShifts, focusedResident } = useEngine()
+  console.log(focusedResident)
 
   const workingResident = assignedShifts[date.toISO()] && assignedShifts[date.toISO()][shift]
 
@@ -28,7 +29,7 @@ const Assigner = ({ date, shift }) => {
     className={styles.add}
   >
       { workingResident !== undefined
-        ? workingResident
+        ? <div className={workingResident == focusedResident ? styles.active : ""}>{ workingResident }</div>
         : <TiUserAdd/>
       }
   </button>
