@@ -144,7 +144,7 @@ const engineReducer = (engine, action) => {
 
     case 'assignShift': {
       clearShift(engine, action) // first remove all other residents who have the same shift
-
+      engine.focusedResident = null
       const { date, shift, name } = action.data
 
       engine.assignedShiftsByResident[name].push({ date: date.toISO(), shift })
@@ -162,6 +162,21 @@ const engineReducer = (engine, action) => {
       break;
     }
 
+    case 'setFocusDate': {
+      engine.focusedDate = action.data
+      break;
+    }
+
+    case 'setFocusShift': {
+      engine.focusedShift = action.data
+      break;
+    }
+
+    case 'setFocusResident': {
+      engine.focusedResident = action.data.name
+      break;
+    }
+
     default: {
       throw Error('Unknown action: ' + action.type)
     }
@@ -175,6 +190,10 @@ const initialEngine = {
   preferences: [],
   residents: [],
   holidays: [],
+
+  focusedShift: null,
+  focusedDate: null,
+  focusedResident: null,
 
   assignedShifts: JSON.parse(localStorage.getItem("assignedShifts")) || {},
   assignedShiftsByResident: JSON.parse(localStorage.getItem("assignedShiftsByResident")) || {},
