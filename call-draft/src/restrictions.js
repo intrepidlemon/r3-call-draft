@@ -1,4 +1,4 @@
-import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isHoliday } from './utils'
+import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isPartOfHolidayWeekend } from './utils'
 
 // shift is adjacent to an assigned night float week
 export const queryNFWeekends = ({ NF }) => date => shift => NF.reduce((okay, nf) =>
@@ -85,99 +85,99 @@ const PerShiftCaps = {
   }
 }
 
-const queryBelowPerShiftCap = ( resident ) => date => shift => {
-  if (isHoliday(date)) {
-    return resident.assignedShifts.filter(s => isHoliday(s.date) && s.shift === shift).length < PerShiftCaps["HOLIDAY"][shift]
+const queryBelowPerShiftCap = ( resident, holidays ) => date => shift => {
+  if (isPartOfHolidayWeekend(holidays)(date)) {
+    return resident.assignedShifts.filter(s => isPartOfHolidayWeekend(holidays)(s.date) && s.shift === shift).length < PerShiftCaps["HOLIDAY"][shift]
   } else {
-    return resident.assignedShifts.filter(s => !isHoliday(s.date) && s.shift === shift).length < PerShiftCaps["REGULAR"][shift]
+    return resident.assignedShifts.filter(s => !isPartOfHolidayWeekend(holidays)(s.date) && s.shift === shift).length < PerShiftCaps["REGULAR"][shift]
   }
 }
 
-export const queryBelowHUPHolidayDayFloatCap = ( resident ) => date => shift => {
-  if (shift === "DF HUP" && isHoliday(date))
+export const queryBelowHUPHolidayDayFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift === "DF HUP" && isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
+  return true
+}
+
+export const queryBelowHUPDayFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift === "DF HUP" && !isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
+  return true
+}
+
+export const queryBelowPAHHolidayDayFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift === "DF PAH" && isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
+  return true
+}
+
+export const queryBelowPAHDayFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift === "DF PAH" && !isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
+  return true
+}
+
+export const queryBelowBodyHolidayCap = ( resident, holidays ) => date => shift => {
+  if (shift === "Body Call" && isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
+  return true
+}
+
+export const queryBelowBodyCap = ( resident, holidays ) => date => shift => {
+  if (shift === "Body Call" && !isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
+  return true
+}
+
+export const queryBelowHUPHolidayNightFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift === "NF HUP" && isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
+  return true
+}
+
+export const queryBelowHUPNightFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift === "NF HUP" && !isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
+  return true
+}
+
+export const queryBelowPAHHolidayNightFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift === "NF PAH" && isPartOfHolidayWeekend(holidays)(date))
     return queryBelowPerShiftCap(resident)(date)(shift)
   return true
 }
 
-export const queryBelowHUPDayFloatCap = ( resident ) => date => shift => {
-  if (shift === "DF HUP" && !isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
+export const queryBelowPAHNightFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift === "NF PAH" && !isPartOfHolidayWeekend(holidays)(date))
+    return queryBelowPerShiftCap(resident, holidays)(date)(shift)
   return true
 }
 
-export const queryBelowPAHHolidayDayFloatCap = ( resident ) => date => shift => {
-  if (shift === "DF PAH" && isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
-  return true
-}
-
-export const queryBelowPAHDayFloatCap = ( resident ) => date => shift => {
-  if (shift === "DF PAH" && !isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
-  return true
-}
-
-export const queryBelowBodyHolidayCap = ( resident ) => date => shift => {
-  if (shift === "Body Call" && isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
-  return true
-}
-
-export const queryBelowBodyCap = ( resident ) => date => shift => {
-  if (shift === "Body Call" && !isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
-  return true
-}
-
-export const queryBelowHUPHolidayNightFloatCap = ( resident ) => date => shift => {
-  if (shift === "NF HUP" && isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
-  return true
-}
-
-export const queryBelowHUPNightFloatCap = ( resident ) => date => shift => {
-  if (shift === "NF HUP" && !isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
-  return true
-}
-
-export const queryBelowPAHHolidayNightFloatCap = ( resident ) => date => shift => {
-  if (shift === "NF PAH" && isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
-  return true
-}
-
-export const queryBelowPAHNightFloatCap = ( resident ) => date => shift => {
-  if (shift === "NF PAH" && !isHoliday(date))
-    return queryBelowPerShiftCap(resident)(date)(shift)
-  return true
-}
-
-export const queryBelowAggregateNightFloatCap = ( resident ) => date => shift => {
+export const queryBelowAggregateNightFloatCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("NF"))
     return resident.assignedShifts.filter(s => s.shift.includes("NF")).length < 5
   return true
 }
 
-export const queryBelowAggregateNormalDayFloatCap = ( resident ) => date => shift => {
-  if (shift.includes("DF") && !isHoliday(date))
-    return resident.assignedShifts.filter(s => !isHoliday(s.date) && s.shift.includes("DF")).length < 13
+export const queryBelowAggregateNormalDayFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift.includes("DF") && !isPartOfHolidayWeekend(holidays)(date))
+    return resident.assignedShifts.filter(s => !isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < 13
   return true
 }
 
-export const queryBelowAggregateHolidayDayFloatCap = ( resident ) => date => shift => {
-  if (shift.includes("DF") && isHoliday(date))
-    return resident.assignedShifts.filter(s => isHoliday(s.date) && s.shift.includes("DF")).length < 1
+export const queryBelowAggregateHolidayDayFloatCap = ( resident, holidays ) => date => shift => {
+  if (shift.includes("DF") && isPartOfHolidayWeekend(holidays)(date))
+    return resident.assignedShifts.filter(s => isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < 1
   return true
 }
 
-export const queryBelowBodyAggregateCap = ( resident ) => date => shift => {
+export const queryBelowBodyAggregateCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("Body"))
     return resident.assignedShifts.filter(s => s.shift.includes("Body")).length < 3
   return true
 }
 
-export const queryBelowTotalCap = ( resident ) => date => shift =>
+export const queryBelowTotalCap = ( resident, holidays ) => date => shift =>
   resident.assignedShifts.length < 19
 
 export const getUnrestrictedResidents = restrictions => residents => day => shift =>
@@ -187,14 +187,14 @@ export const getUnrestrictedResidents = restrictions => residents => day => shif
     )
   )
 
-export const getConstraintsForResidents = restrictions => residents => day => shift =>
+export const getConstraintsForResidents = restrictions => (residents, holidays) => day => shift =>
   Object.fromEntries(residents.map(resident =>
     [
       resident.name,
       Object.fromEntries(restrictions.map(restriction =>
         [
           restriction.name,
-          restriction(resident)(day)(shift)
+          restriction(resident, holidays)(day)(shift)
         ]
       ))
     ]
@@ -274,11 +274,10 @@ export const mapConstraintToMessage = {
     "queryPreferToWorkDays": "Prefer to work",
   }
 
-export const splitResidents = residents => date => shift => {
-
-  const hardConstraints = getConstraintsForResidents(hardRestrictions)(residents)(date)(shift)
-  const softConstraints = getConstraintsForResidents(softRestrictions)(residents)(date)(shift)
-  const preferred = getConstraintsForResidents(preferToWorkFilters)(residents)(date)(shift)
+export const splitResidents = (residents, holidays) => date => shift => {
+  const hardConstraints = getConstraintsForResidents(hardRestrictions)(residents, holidays)(date)(shift)
+  const softConstraints = getConstraintsForResidents(softRestrictions)(residents, holidays)(date)(shift)
+  const preferred = getConstraintsForResidents(preferToWorkFilters)(residents, holidays)(date)(shift)
 
   const hardRestricted = Object.keys(hardConstraints).map(name => ({
     name,

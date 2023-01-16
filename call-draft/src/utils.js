@@ -35,6 +35,10 @@ export const mod = function (n, m) {
 
 export const isHoliday = coerceLuxonWrapper(day => day.weekday !== 6 && day.weekday !== 7)
 
+export const isPartOfHolidayWeekend = (holidays) => coerceLuxonWrapper(day => {
+  return holidays.includes(`${day.c.year}-${day.c.month.toString().padStart(2, "0")}-${day.c.day.toString().padStart(2, "0")}`)
+})
+
 export const weekNumber = coerceLuxonWrapper(day =>
   day.weekday < 4
   ? day.weekNumber - 1

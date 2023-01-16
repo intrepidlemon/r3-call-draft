@@ -2,7 +2,7 @@ import React from 'react'
 import { DateTime } from 'luxon'
 
 import { useEngine } from '../engine/context'
-import { isHoliday } from '../utils'
+import { isPartOfHolidayWeekend } from '../utils'
 
 import Assigner from './assigner'
 
@@ -10,7 +10,6 @@ import styles from './tally.module.css'
 
 const Tally = () => {
   const { requiredShifts, assignedShiftsByResident } = useEngine()
-
   if (!requiredShifts || requiredShifts.length === 0) {
     return null
   }
@@ -33,16 +32,18 @@ const Tally = () => {
 }
 
 const Row = ({ name, shiftNames, shifts }) => {
+  const { holidays } = useEngine()
+
   const counts = shifts.reduce((obj, s) => {
     const count = obj[s.shift] === undefined ? 0 : obj[s.shift]
-    if (!isHoliday(s.date)) {
+    if (!isPartOfHolidayWeekend(holidays)(s.date)) {
       obj[s.shift] = count + 1
     }
     return obj
   }, {})
   const holidayCounts = shifts.reduce((obj, s) => {
     const count = obj[s.shift] === undefined ? 0 : obj[s.shift]
-    if (isHoliday(s.date)) {
+    if (isPartOfHolidayWeekend(holidays, s.date)) {
       obj[s.shift] = count + 1
     }
     return obj

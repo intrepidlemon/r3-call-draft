@@ -14,11 +14,12 @@ import styles from './picker.module.css'
 const Picker = ({ assigned, date, shift, close }) => {
   const ref = useRef()
   const engine = useEngine()
+  const holidays = engine.holidays
   const residents = residentsView(engine)
   const dispatch = useEngineDispatch()
 
   useOnClickOutside(ref, close)
-  const {preferredToWork, neutral, softRestricted, hardRestricted} = splitResidents(residents)(date)(shift)
+  const {preferredToWork, neutral, softRestricted, hardRestricted} = splitResidents(residents, holidays)(date)(shift)
 
   const assignResident = name => () => {
       close()

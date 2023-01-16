@@ -4,7 +4,7 @@ import { DateTime } from 'luxon'
 import { freeze } from 'immer'
 
 import { cleanResidentCSV, extractRotations } from '../csv-handling'
-import { sameDay } from '../utils'
+import { sameDay, isHoliday } from '../utils'
 
 import Papa from 'papaparse'
 
@@ -31,6 +31,31 @@ export const EngineProvider = ({ children }) => {
         ...d,
         "date": DateTime.fromISO(d.date),
       }))
+
+      for (var i = 0; i < data.length; i++) {
+        let date = DateTime.fromISO(data[i].date)
+        if (isHoliday(date)) {
+          var holidayList = [data[i].date]
+
+          // holiday falls on a Monday or Tuesday
+          if (date.weekday < 3) {
+            if (i > 0) { holidayList.push(data[i - 1].date) }
+            if (i > 1) { holidayList.push(data[i - 2].date) }
+          // holiday falls on a Thursday or Friday
+          } else if (date.weekday > 3 && i < data.length - 2) {
+            if (i < data.length - 1) { holidayList.push(data[i + 1].date) }
+            if (i > data.length - 2) { holidayList.push(data[i + 2].date) }
+          } else {
+            console.log("Weird year. Holiday is on a Wednesday. Is that even a holiday?")
+          }
+
+          dispatch({
+            type: "addHolidays",
+            data: holidayList,
+          })
+        }
+      }
+
       dispatch({
         type: "addRequiredShifts",
         data: freeze(parsedData),
@@ -92,6 +117,11 @@ const engineReducer = (engine, action) => {
       break;
     }
 
+    case 'addHolidays': {
+      engine.holidays = engine.holidays.concat(action.data)
+      break;
+    }
+
     case 'addRotations': {
       engine.rotations = action.data
       break;
@@ -144,6 +174,7 @@ const initialEngine = {
   rotations: [],
   preferences: [],
   residents: [],
+  holidays: [],
 
   assignedShifts: JSON.parse(localStorage.getItem("assignedShifts")) || {},
   assignedShiftsByResident: JSON.parse(localStorage.getItem("assignedShiftsByResident")) || {},
