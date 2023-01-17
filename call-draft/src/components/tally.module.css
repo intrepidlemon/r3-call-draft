@@ -49,3 +49,7 @@ thead tr > * + * {
 td.resident {
   text-align: left;
 }
+
+td.difficulty {
+  background-color: hsla(0, 100%, 50%, var(--ratio));
+}

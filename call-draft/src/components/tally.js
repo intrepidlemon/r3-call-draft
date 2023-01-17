@@ -60,6 +60,7 @@ const Row = ({ resident, shiftNames, shifts, holidays }) => {
     }
     return obj
   }, {})
+  const totalDifficulty = getTotalDifficulty(holidays)(resident)
   return <tr>
     <td className={styles.resident}>{resident.name}</td>
     { shiftNames.map(sn =>
@@ -71,8 +72,8 @@ const Row = ({ resident, shiftNames, shifts, holidays }) => {
       <td>
         { countShifts(resident)("all") }
       </td>
-      <td>
-        { getTotalDifficulty(holidays)(resident) }
+      <td className={styles.difficulty} style={{ [`--ratio`]: `${totalDifficulty/19}` }}>
+        { totalDifficulty }
       </td>
   </tr>
 }

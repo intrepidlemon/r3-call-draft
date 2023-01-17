@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: lightgray;
+  background: lightgreen;
   height: 100%;
 }
 
@@ -39,7 +39,7 @@
 }
 
 .resident button {
-  width: 10rem;
+  width: 7rem;
   padding: 0.1rem 1rem;
   border-radius: 0rem;
   border: 1px solid black;
@@ -92,4 +92,21 @@
 
 .preferred .constraints > span {
   background: lightgreen;
+}
+
+.values {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+
+.difficulty {
+  padding: 0.3rem 0.5rem;
+  border-radius: 1rem;
+  background-color: hsla(0, 100%, 50%, var(--ratio));
+  margin-left: 0.5rem;
+  border: 1px solid black;
 }
