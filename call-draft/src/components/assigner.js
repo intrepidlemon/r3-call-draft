@@ -11,7 +11,6 @@ import Picker from './picker'
 const Assigner = ({ date, shift }) => {
   const [open, setOpen] = useState(false)
   const { assignedShifts, focusedResident } = useEngine()
-  console.log(focusedResident)
 
   const workingResident = assignedShifts[date.toISO()] && assignedShifts[date.toISO()][shift]
 
