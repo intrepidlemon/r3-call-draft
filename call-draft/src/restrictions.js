@@ -323,3 +323,5 @@ export const countShifts = residents => resident => shift => {
 
   return full_resident.assignedShifts.filter(s => s.shift === shift).length
 }
+
+

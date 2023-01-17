@@ -28,7 +28,7 @@ const Assigner = ({ date, shift }) => {
     className={styles.add}
   >
       { workingResident !== undefined
-        ? <div className={workingResident == focusedResident ? styles.active : ""}>{ workingResident }</div>
+        ? <div className={workingResident === focusedResident ? styles.active : ""}>{ workingResident }</div>
         : <TiUserAdd/>
       }
   </button>
