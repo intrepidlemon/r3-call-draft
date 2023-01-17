@@ -7,6 +7,7 @@ import { useOnClickOutside } from '../react-utils'
 import {
   mapConstraintToMessage,
   splitResidents,
+  countShifts,
 } from '../restrictions'
 
 import styles from './picker.module.css'
@@ -54,6 +55,8 @@ const Picker = ({ assigned, date, shift, close }) => {
               name={r.name}
               constraints={r.preferred}
               assign={assignResident(r.name)}
+              numTotalShifts={countShifts(residents)(r)("all")}
+              numSpecificShifts={countShifts(residents)(r)(shift)}
             />)}
           </div>
           <h4>Neutral</h4>
@@ -63,6 +66,8 @@ const Picker = ({ assigned, date, shift, close }) => {
               name={r.name}
               constraints={r.constraints}
               assign={assignResident(r.name)}
+              numTotalShifts={countShifts(residents)(r)("all")}
+              numSpecificShifts={countShifts(residents)(r)(shift)}
             />)}
           </div>
           <h4>Preferred not</h4>
@@ -72,6 +77,8 @@ const Picker = ({ assigned, date, shift, close }) => {
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
+                numTotalShifts={countShifts(residents)(r)("all")}
+                numSpecificShifts={countShifts(residents)(r)(shift)}
               />)}
           </div>
           <h4> Restricted </h4>
@@ -80,6 +87,8 @@ const Picker = ({ assigned, date, shift, close }) => {
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
+                numTotalShifts={countShifts(residents)(r)("all")}
+                numSpecificShifts={countShifts(residents)(r)(shift)}
               />)}
           </div>
       </div>
@@ -87,7 +96,7 @@ const Picker = ({ assigned, date, shift, close }) => {
   </div>
 }
 
-const Resident = ({ name, constraints, assign }) => {
+const Resident = ({ name, constraints, assign, numTotalShifts, numSpecificShifts}) => {
 
   const dispatch = useEngineDispatch()
 
@@ -99,21 +108,21 @@ const Resident = ({ name, constraints, assign }) => {
       }})
     }
 
-  return <div 
+  return <div
     className={styles.resident}
     onMouseEnter={setFocusResident(name)}
     onMouseLeave={setFocusResident(null)}>
     <button
       onClick={assign}
     >
-      {name}
+      {name} | {numSpecificShifts} | {numTotalShifts}
     </button>
     <div className={styles.constraints}>
       { constraints.map(c =>
         <span> {mapConstraintToMessage[c]} </span>
       )}
     </div>
-  </div>
+</div>
 }
 
 

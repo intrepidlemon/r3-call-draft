@@ -313,3 +313,14 @@ export const splitResidents = (residents, holidays) => date => shift => {
 
   return {preferredToWork, neutral, softRestricted, hardRestricted}
 }
+
+export const countShifts = residents => resident => shift => {
+  const full_resident = residents.filter(r => r.name === resident.name)[0]
+
+  if (shift === "all") {
+    return full_resident.assignedShifts.length
+  }
+
+  console.log(full_resident, shift, full_resident.assignedShifts.filter(s => s.shift === shift))
+  return full_resident.assignedShifts.filter(s => s.shift === shift).length
+}
