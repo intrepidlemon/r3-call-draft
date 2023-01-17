@@ -21,6 +21,8 @@ const Tally = () => {
   const shiftNames = Object.keys(requiredShifts[0])
   shiftNames.shift(0)
 
+  residents.sort((a, b) => a.name.localeCompare(b.name))
+
   return <div className={styles.tally}>
     <table className={styles.table}>
       <thead>
