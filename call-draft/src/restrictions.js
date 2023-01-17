@@ -291,6 +291,14 @@ export const mapConstraintToMessage = {
     "queryPreferToWorkDays": "Prefer to work",
   }
 
+const metadata = (residents, holidays) => (shift, name) => ({
+  numTotalShifts: countShifts(residents.find(res => res.name === name))("all"),
+  numSpecificShifts: countShifts(residents.find(res => res.name === name))(shift),
+  totalDifficulty: getTotalDifficulty(holidays)(residents.find(res => res.name === name)),
+})
+
+
+
 export const splitResidents = (residents, holidays) => date => shift => {
   const hardConstraints = getConstraintsForResidents(hardRestrictions)(residents, holidays)(date)(shift)
   const softConstraints = getConstraintsForResidents(softRestrictions)(residents, holidays)(date)(shift)
@@ -298,19 +306,22 @@ export const splitResidents = (residents, holidays) => date => shift => {
 
   const hardRestricted = Object.keys(hardConstraints).map(name => ({
     name,
-    constraints: Object.keys(hardConstraints[name]).filter(k => !hardConstraints[name][k])
+    constraints: Object.keys(hardConstraints[name]).filter(k => !hardConstraints[name][k]),
+    ...metadata(residents, holidays)(shift, name),
   })).filter(o => o.constraints.length > 0)
   const hardRestrictedNames = hardRestricted.map(o => o.name)
 
   const softRestricted = Object.keys(softConstraints).map(name => ({
     name,
-    constraints: Object.keys(softConstraints[name]).filter(k => !softConstraints[name][k])
+    constraints: Object.keys(softConstraints[name]).filter(k => !softConstraints[name][k]),
+    ...metadata(residents, holidays)(shift, name),
   })).filter(o => o.constraints.length > 0 && hardRestrictedNames.find(q => q === o.name) === undefined)
   const softRestrictedNames = softRestricted.map(o => o.name)
 
   const preferredToWork = Object.keys(preferred).map(name => ({
     name,
-    preferred: Object.keys(preferred[name]).filter(k => preferred[name][k])
+    preferred: Object.keys(preferred[name]).filter(k => preferred[name][k]),
+    ...metadata(residents, holidays)(shift, name),
   })).filter(
     o => o.preferred.length > 0
     && hardRestrictedNames.find(q => q === o.name) === undefined
@@ -322,17 +333,29 @@ export const splitResidents = (residents, holidays) => date => shift => {
     hardRestrictedNames.find(q => q === r.name) === undefined
     && softRestrictedNames.find(q => q === r.name) === undefined
     && preferredToWorkNames.find(q => q === r.name) === undefined
-  ).map(r => ({name: r.name, constraints: [] }))
+  ).map(r => ({
+    name: r.name,
+    constraints: [],
+    ...metadata(residents, holidays)(shift, r.name),
+  }))
 
-  return {preferredToWork, neutral, softRestricted, hardRestricted}
+  preferredToWork.sort((a, b) => a.totalDifficulty - b.totalDifficulty)
+  neutral.sort((a, b) => a.totalDifficulty - b.totalDifficulty)
+  softRestricted.sort((a, b) => a.totalDifficulty - b.totalDifficulty)
+  hardRestricted.sort((a, b) => a.totalDifficulty - b.totalDifficulty)
+
+  return {
+    preferredToWork,
+    neutral,
+    softRestricted,
+    hardRestricted,
+  }
 }
 
 export const countShifts = resident => shift => {
-
   if (shift === "all") {
     return resident.assignedShifts.length
   }
-
   return resident.assignedShifts.filter(s => s.shift === shift).length
 }
 

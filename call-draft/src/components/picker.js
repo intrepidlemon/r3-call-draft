@@ -7,8 +7,6 @@ import { useOnClickOutside } from '../react-utils'
 import {
   mapConstraintToMessage,
   splitResidents,
-  countShifts,
-  getTotalDifficulty,
 } from '../restrictions'
 
 import styles from './picker.module.css'
@@ -56,9 +54,9 @@ const Picker = ({ assigned, date, shift, close }) => {
               name={r.name}
               constraints={r.preferred}
               assign={assignResident(r.name)}
-              numTotalShifts={countShifts(residents.find(res => res.name === r.name))("all")}
-              numSpecificShifts={countShifts(residents.find(res => res.name === r.name))(shift)}
-              totalDifficulty={getTotalDifficulty(holidays)(residents.find(res => res.name === r.name))}
+              numTotalShifts={r.numTotalShifts}
+              numSpecificShifts={r.numSpecificShifts}
+              totalDifficulty={r.totalDifficulty}
             />)}
           </div>
           <h4>Neutral</h4>
@@ -68,9 +66,9 @@ const Picker = ({ assigned, date, shift, close }) => {
               name={r.name}
               constraints={r.constraints}
               assign={assignResident(r.name)}
-              numTotalShifts={countShifts(residents.find(res => res.name === r.name))("all")}
-              numSpecificShifts={countShifts(residents.find(res => res.name === r.name))(shift)}
-              totalDifficulty={getTotalDifficulty(holidays)(residents.find(res => res.name === r.name))}
+              numTotalShifts={r.numTotalShifts}
+              numSpecificShifts={r.numSpecificShifts}
+              totalDifficulty={r.totalDifficulty}
             />)}
           </div>
           <h4>Preferred not</h4>
@@ -80,9 +78,9 @@ const Picker = ({ assigned, date, shift, close }) => {
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
-                numTotalShifts={countShifts(residents.find(res => res.name === r.name))("all")}
-                numSpecificShifts={countShifts(residents.find(res => res.name === r.name))(shift)}
-                totalDifficulty={getTotalDifficulty(holidays)(residents.find(res => res.name === r.name))}
+                numTotalShifts={r.numTotalShifts}
+                numSpecificShifts={r.numSpecificShifts}
+                totalDifficulty={r.totalDifficulty}
               />)}
           </div>
           <h4> Restricted </h4>
@@ -91,9 +89,9 @@ const Picker = ({ assigned, date, shift, close }) => {
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
-                numTotalShifts={countShifts(residents.find(res => res.name === r.name))("all")}
-                numSpecificShifts={countShifts(residents.find(res => res.name === r.name))(shift)}
-                totalDifficulty={getTotalDifficulty(holidays)(residents.find(res => res.name === r.name))}
+                numTotalShifts={r.numTotalShifts}
+                numSpecificShifts={r.numSpecificShifts}
+                totalDifficulty={r.totalDifficulty}
               />)}
           </div>
       </div>
