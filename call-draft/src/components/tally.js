@@ -1,38 +1,50 @@
 import React from 'react'
-import { DateTime } from 'luxon'
 
-import { useEngine } from '../engine/context'
+import { useEngine, residentsView } from '../engine/context'
 import { isPartOfHolidayWeekend } from '../utils'
-
-import Assigner from './assigner'
+import {
+  countShifts,
+  getTotalDifficulty,
+} from '../restrictions'
 
 import styles from './tally.module.css'
 
 const Tally = () => {
-  const { requiredShifts, assignedShiftsByResident } = useEngine()
+  const engine = useEngine()
+  const { requiredShifts, holidays } = engine
+  const residents = residentsView(engine)
+
   if (!requiredShifts || requiredShifts.length === 0) {
     return null
   }
 
   const shiftNames = Object.keys(requiredShifts[0])
   shiftNames.shift(0)
+
   return <div className={styles.tally}>
     <table className={styles.table}>
       <thead>
         <tr>
           <th>resident</th>
           { shiftNames.map(k => <th key={k}>{k}</th>)}
+          <th># shifts</th>
+          <th>difficulty</th>
         </tr>
       </thead>
       <tbody>
-        { Object.keys(assignedShiftsByResident).map(k => <Row key={k} name={k} shiftNames={shiftNames} shifts={assignedShiftsByResident[k]} />) }
+        { residents.map(r => <Row
+          key={r.name}
+          resident={r}
+          holidays={holidays}
+          shiftNames={shiftNames}
+          shifts={r.assignedShifts}
+        />) }
       </tbody>
     </table>
   </div>
 }
 
-const Row = ({ name, shiftNames, shifts }) => {
-  const { holidays } = useEngine()
+const Row = ({ resident, shiftNames, shifts, holidays }) => {
 
   const counts = shifts.reduce((obj, s) => {
     const count = obj[s.shift] === undefined ? 0 : obj[s.shift]
@@ -49,12 +61,19 @@ const Row = ({ name, shiftNames, shifts }) => {
     return obj
   }, {})
   return <tr>
-    <td className={styles.resident}>{name}</td>
-    { shiftNames.map(sn => <td>
+    <td className={styles.resident}>{resident.name}</td>
+    { shiftNames.map(sn =>
+      <td>
         { counts[sn] === undefined ? 0 : counts[sn] } &nbsp;
-        ({ holidayCounts[sn] === undefined ? 0 : holidayCounts[sn] })
-      </td>)
-    }
+        { holidayCounts[sn] && `(${holidayCounts[sn]})` }
+      </td>
+    )}
+      <td>
+        { countShifts(resident)("all") }
+      </td>
+      <td>
+        { getTotalDifficulty(holidays)(resident) }
+      </td>
   </tr>
 }
 

@@ -1,5 +1,46 @@
 import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isPartOfHolidayWeekend } from './utils'
 
+const PerShiftCaps = {
+  "REGULAR" : {
+    "DF HUP": 6,
+    "DF PAH": 6,
+    "Body Call": 2,
+    "NF HUP": 2,
+    "NF PAH": 2,
+  },
+
+  "HOLIDAY" : {
+    "DF HUP": 3,
+    "DF PAH": 3,
+    "Body Call": 1,
+    "NF HUP": 1,
+    "NF PAH": 1,
+  },
+  "AGGREGATE NF": 5,
+  "AGGREGATE DF": 13,
+  "AGGREGATE HOLIDAY DF": 3,
+  "AGGREGATE BODY": 3,
+  "TOTAL CAP": 19,
+}
+
+const DifficultyHeuristic = {
+  "REGULAR" : {
+    "DF HUP": 1.0,
+    "DF PAH": 1.0,
+    "Body Call": 0.75,
+    "NF HUP": 1.0,
+    "NF PAH": 1.0,
+  },
+
+  "HOLIDAY" : {
+    "DF HUP": 1.25,
+    "DF PAH": 1.25,
+    "Body Call": 1,
+    "NF HUP": 1.25,
+    "NF PAH": 1.25,
+  },
+}
+
 // shift is adjacent to an assigned night float week
 export const queryNFWeekends = ({ NF }) => date => shift => NF.reduce((okay, nf) =>
   okay &&
@@ -48,12 +89,6 @@ export const querySaturdayNightCallWeekend = ({ assignedShifts }) => date => shi
   true
 )
 
-// day shift is adjacent to a night shift
-// TODO: IMPLEMENT THIS
-
-// night shift is adjacent to a day shift
-// TODO: IMPLEMENT THIS
-
 // shift is between two assigned CHOP weeks
 
 export const queryCHOP = ({ CHOP }) => date => shift =>
@@ -66,28 +101,6 @@ export const queryCHOP = ({ CHOP }) => date => shift =>
   0
 ) < 2
 
-
-const PerShiftCaps = {
-  "REGULAR" : {
-    "DF HUP": 6,
-    "DF PAH": 6,
-    "Body Call": 2,
-    "NF HUP": 2,
-    "NF PAH": 2,
-  },
-
-  "HOLIDAY" : {
-    "DF HUP": 3,
-    "DF PAH": 3,
-    "Body Call": 1,
-    "NF HUP": 1,
-    "NF PAH": 1,
-  },
-  "AGGREGATE NF": 5,
-  "AGGREGATE DF": 13,
-  "AGGREGATE HOLIDAY DF": 3,
-  "AGGREGATE BODY": 3,
-}
 
 const queryBelowPerShiftCap = ( resident, holidays ) => date => shift => {
   if (isPartOfHolidayWeekend(holidays)(date)) {
@@ -182,7 +195,7 @@ export const queryBelowBodyAggregateCap = ( resident, holidays ) => date => shif
 }
 
 export const queryBelowTotalCap = ( resident, holidays ) => date => shift =>
-  resident.assignedShifts.length < 19
+  resident.assignedShifts.length < PerShiftCaps["TOTAL CAP"]
 
 export const getUnrestrictedResidents = restrictions => (residents, holidays) => day => shift =>
   residents.filter(
@@ -314,14 +327,18 @@ export const splitResidents = (residents, holidays) => date => shift => {
   return {preferredToWork, neutral, softRestricted, hardRestricted}
 }
 
-export const countShifts = residents => resident => shift => {
-  const full_resident = residents.filter(r => r.name === resident.name)[0]
+export const countShifts = resident => shift => {
 
   if (shift === "all") {
-    return full_resident.assignedShifts.length
+    return resident.assignedShifts.length
   }
 
-  return full_resident.assignedShifts.filter(s => s.shift === shift).length
+  return resident.assignedShifts.filter(s => s.shift === shift).length
 }
 
-
+export const getTotalDifficulty = holidays => resident =>
+  resident.assignedShifts.reduce((total, s) =>
+    isPartOfHolidayWeekend(holidays)(s.date)
+    ? total + DifficultyHeuristic["HOLIDAY"][s.shift]
+    : total + DifficultyHeuristic["REGULAR"][s.shift]
+  , 0)

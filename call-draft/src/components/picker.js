@@ -55,8 +55,8 @@ const Picker = ({ assigned, date, shift, close }) => {
               name={r.name}
               constraints={r.preferred}
               assign={assignResident(r.name)}
-              numTotalShifts={countShifts(residents)(r)("all")}
-              numSpecificShifts={countShifts(residents)(r)(shift)}
+              numTotalShifts={countShifts(residents.find(res => res.name === r.name))("all")}
+              numSpecificShifts={countShifts(residents.find(res => res.name === r.name))(shift)}
             />)}
           </div>
           <h4>Neutral</h4>
@@ -66,8 +66,8 @@ const Picker = ({ assigned, date, shift, close }) => {
               name={r.name}
               constraints={r.constraints}
               assign={assignResident(r.name)}
-              numTotalShifts={countShifts(residents)(r)("all")}
-              numSpecificShifts={countShifts(residents)(r)(shift)}
+              numTotalShifts={countShifts(residents.find(res => res.name === r.name))("all")}
+              numSpecificShifts={countShifts(residents.find(res => res.name === r.name))(shift)}
             />)}
           </div>
           <h4>Preferred not</h4>
@@ -77,8 +77,8 @@ const Picker = ({ assigned, date, shift, close }) => {
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
-                numTotalShifts={countShifts(residents)(r)("all")}
-                numSpecificShifts={countShifts(residents)(r)(shift)}
+                numTotalShifts={countShifts(residents.find(res => res.name === r.name))("all")}
+                numSpecificShifts={countShifts(residents.find(res => res.name === r.name))(shift)}
               />)}
           </div>
           <h4> Restricted </h4>
@@ -87,8 +87,8 @@ const Picker = ({ assigned, date, shift, close }) => {
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
-                numTotalShifts={countShifts(residents)(r)("all")}
-                numSpecificShifts={countShifts(residents)(r)(shift)}
+                numTotalShifts={countShifts(residents.find(res => res.name === r.name))("all")}
+                numSpecificShifts={countShifts(residents.find(res => res.name === r.name))(shift)}
               />)}
           </div>
       </div>
