@@ -10,7 +10,7 @@
 }
 
 .table > * {
-  text-align: left;
+  text-align: right;
   margin: 0;
   padding: 0;
 }
@@ -32,7 +32,7 @@
   height: 100%;
   margin: 0;
   padding: 0;
-  text-align: center;
+  text-align: right;
 }
 
 .odd {

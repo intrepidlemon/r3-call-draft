@@ -67,15 +67,15 @@ const Row = ({ resident, shiftNames, shifts, holidays }) => {
     <td className={styles.resident}>{resident.name}</td>
     { shiftNames.map(sn =>
       <td>
-        { counts[sn] === undefined ? 0 : counts[sn] } &nbsp;
-        { holidayCounts[sn] && `(${holidayCounts[sn]})` }
+        { counts[sn] === undefined ? 0 : counts[sn] }
+        { holidayCounts[sn] ? `+${holidayCounts[sn]}H` : "   "}
       </td>
     )}
       <td>
         { countShifts(resident)("all") }
       </td>
       <td className={styles.difficulty} style={{ [`--ratio`]: `${totalDifficulty/19}` }}>
-        { totalDifficulty }
+        { totalDifficulty.toFixed(2) }
       </td>
   </tr>
 }
