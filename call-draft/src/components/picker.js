@@ -7,7 +7,6 @@ import { useOnClickOutside } from '../react-utils'
 import {
   mapConstraintToMessage,
   splitResidents,
-  countShifts,
 } from '../restrictions'
 
 import styles from './picker.module.css'
@@ -55,8 +54,9 @@ const Picker = ({ assigned, date, shift, close }) => {
               name={r.name}
               constraints={r.preferred}
               assign={assignResident(r.name)}
-              numTotalShifts={countShifts(residents)(r)("all")}
-              numSpecificShifts={countShifts(residents)(r)(shift)}
+              numTotalShifts={r.numTotalShifts}
+              numSpecificShifts={r.numSpecificShifts}
+              totalDifficulty={r.totalDifficulty}
             />)}
           </div>
           <h4>Neutral</h4>
@@ -66,8 +66,9 @@ const Picker = ({ assigned, date, shift, close }) => {
               name={r.name}
               constraints={r.constraints}
               assign={assignResident(r.name)}
-              numTotalShifts={countShifts(residents)(r)("all")}
-              numSpecificShifts={countShifts(residents)(r)(shift)}
+              numTotalShifts={r.numTotalShifts}
+              numSpecificShifts={r.numSpecificShifts}
+              totalDifficulty={r.totalDifficulty}
             />)}
           </div>
           <h4>Preferred not</h4>
@@ -77,8 +78,9 @@ const Picker = ({ assigned, date, shift, close }) => {
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
-                numTotalShifts={countShifts(residents)(r)("all")}
-                numSpecificShifts={countShifts(residents)(r)(shift)}
+                numTotalShifts={r.numTotalShifts}
+                numSpecificShifts={r.numSpecificShifts}
+                totalDifficulty={r.totalDifficulty}
               />)}
           </div>
           <h4> Restricted </h4>
@@ -87,8 +89,9 @@ const Picker = ({ assigned, date, shift, close }) => {
                 name={r.name}
                 constraints={r.constraints}
                 assign={assignResident(r.name)}
-                numTotalShifts={countShifts(residents)(r)("all")}
-                numSpecificShifts={countShifts(residents)(r)(shift)}
+                numTotalShifts={r.numTotalShifts}
+                numSpecificShifts={r.numSpecificShifts}
+                totalDifficulty={r.totalDifficulty}
               />)}
           </div>
       </div>
@@ -96,7 +99,7 @@ const Picker = ({ assigned, date, shift, close }) => {
   </div>
 }
 
-const Resident = ({ name, constraints, assign, numTotalShifts, numSpecificShifts}) => {
+const Resident = ({ name, constraints, assign, numTotalShifts, numSpecificShifts, totalDifficulty }) => {
 
   const dispatch = useEngineDispatch()
 
@@ -115,8 +118,17 @@ const Resident = ({ name, constraints, assign, numTotalShifts, numSpecificShifts
     <button
       onClick={assign}
     >
-      {name} | {numSpecificShifts} | {numTotalShifts}
+      {name}
     </button>
+    <div className={styles.values}>
+      {numSpecificShifts} | {numTotalShifts}
+      <span
+        className={styles.difficulty}
+        style={{ [`--ratio`]: `${totalDifficulty/19}` }}
+      >
+          {totalDifficulty.toFixed(2)}
+      </span>
+    </div>
     <div className={styles.constraints}>
       { constraints.map(c =>
         <span> {mapConstraintToMessage[c]} </span>

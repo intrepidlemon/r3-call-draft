@@ -1,5 +1,46 @@
 import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isPartOfHolidayWeekend } from './utils'
 
+const PerShiftCaps = {
+  "REGULAR" : {
+    "DF HUP": 6,
+    "DF PAH": 6,
+    "Body Call": 2,
+    "NF HUP": 2,
+    "NF PAH": 2,
+  },
+
+  "HOLIDAY" : {
+    "DF HUP": 3,
+    "DF PAH": 3,
+    "Body Call": 1,
+    "NF HUP": 1,
+    "NF PAH": 1,
+  },
+  "AGGREGATE NF": 5,
+  "AGGREGATE DF": 13,
+  "AGGREGATE HOLIDAY DF": 3,
+  "AGGREGATE BODY": 3,
+  "TOTAL CAP": 19,
+}
+
+const DifficultyHeuristic = {
+  "REGULAR" : {
+    "DF HUP": 1.0,
+    "DF PAH": 1.0,
+    "Body Call": 0.75,
+    "NF HUP": 1.0,
+    "NF PAH": 1.0,
+  },
+
+  "HOLIDAY" : {
+    "DF HUP": 1.25,
+    "DF PAH": 1.25,
+    "Body Call": 1,
+    "NF HUP": 1.25,
+    "NF PAH": 1.25,
+  },
+}
+
 // shift is adjacent to an assigned night float week
 export const queryNFWeekends = ({ NF }) => date => shift => NF.reduce((okay, nf) =>
   okay &&
@@ -48,12 +89,6 @@ export const querySaturdayNightCallWeekend = ({ assignedShifts }) => date => shi
   true
 )
 
-// day shift is adjacent to a night shift
-// TODO: IMPLEMENT THIS
-
-// night shift is adjacent to a day shift
-// TODO: IMPLEMENT THIS
-
 // shift is between two assigned CHOP weeks
 
 export const queryCHOP = ({ CHOP }) => date => shift =>
@@ -66,28 +101,6 @@ export const queryCHOP = ({ CHOP }) => date => shift =>
   0
 ) < 2
 
-
-const PerShiftCaps = {
-  "REGULAR" : {
-    "DF HUP": 6,
-    "DF PAH": 6,
-    "Body Call": 2,
-    "NF HUP": 2,
-    "NF PAH": 2,
-  },
-
-  "HOLIDAY" : {
-    "DF HUP": 3,
-    "DF PAH": 3,
-    "Body Call": 1,
-    "NF HUP": 1,
-    "NF PAH": 1,
-  },
-  "AGGREGATE NF": 5,
-  "AGGREGATE DF": 13,
-  "AGGREGATE HOLIDAY DF": 3,
-  "AGGREGATE BODY": 3,
-}
 
 const queryBelowPerShiftCap = ( resident, holidays ) => date => shift => {
   if (isPartOfHolidayWeekend(holidays)(date)) {
@@ -182,7 +195,7 @@ export const queryBelowBodyAggregateCap = ( resident, holidays ) => date => shif
 }
 
 export const queryBelowTotalCap = ( resident, holidays ) => date => shift =>
-  resident.assignedShifts.length < 19
+  resident.assignedShifts.length < PerShiftCaps["TOTAL CAP"]
 
 export const getUnrestrictedResidents = restrictions => (residents, holidays) => day => shift =>
   residents.filter(
@@ -278,6 +291,14 @@ export const mapConstraintToMessage = {
     "queryPreferToWorkDays": "Prefer to work",
   }
 
+const metadata = (residents, holidays) => (shift, name) => ({
+  numTotalShifts: countShifts(residents.find(res => res.name === name))("all"),
+  numSpecificShifts: countShifts(residents.find(res => res.name === name))(shift),
+  totalDifficulty: getTotalDifficulty(holidays)(residents.find(res => res.name === name)),
+})
+
+
+
 export const splitResidents = (residents, holidays) => date => shift => {
   const hardConstraints = getConstraintsForResidents(hardRestrictions)(residents, holidays)(date)(shift)
   const softConstraints = getConstraintsForResidents(softRestrictions)(residents, holidays)(date)(shift)
@@ -285,19 +306,22 @@ export const splitResidents = (residents, holidays) => date => shift => {
 
   const hardRestricted = Object.keys(hardConstraints).map(name => ({
     name,
-    constraints: Object.keys(hardConstraints[name]).filter(k => !hardConstraints[name][k])
+    constraints: Object.keys(hardConstraints[name]).filter(k => !hardConstraints[name][k]),
+    ...metadata(residents, holidays)(shift, name),
   })).filter(o => o.constraints.length > 0)
   const hardRestrictedNames = hardRestricted.map(o => o.name)
 
   const softRestricted = Object.keys(softConstraints).map(name => ({
     name,
-    constraints: Object.keys(softConstraints[name]).filter(k => !softConstraints[name][k])
+    constraints: Object.keys(softConstraints[name]).filter(k => !softConstraints[name][k]),
+    ...metadata(residents, holidays)(shift, name),
   })).filter(o => o.constraints.length > 0 && hardRestrictedNames.find(q => q === o.name) === undefined)
   const softRestrictedNames = softRestricted.map(o => o.name)
 
   const preferredToWork = Object.keys(preferred).map(name => ({
     name,
-    preferred: Object.keys(preferred[name]).filter(k => preferred[name][k])
+    preferred: Object.keys(preferred[name]).filter(k => preferred[name][k]),
+    ...metadata(residents, holidays)(shift, name),
   })).filter(
     o => o.preferred.length > 0
     && hardRestrictedNames.find(q => q === o.name) === undefined
@@ -309,19 +333,35 @@ export const splitResidents = (residents, holidays) => date => shift => {
     hardRestrictedNames.find(q => q === r.name) === undefined
     && softRestrictedNames.find(q => q === r.name) === undefined
     && preferredToWorkNames.find(q => q === r.name) === undefined
-  ).map(r => ({name: r.name, constraints: [] }))
+  ).map(r => ({
+    name: r.name,
+    constraints: [],
+    ...metadata(residents, holidays)(shift, r.name),
+  }))
 
-  return {preferredToWork, neutral, softRestricted, hardRestricted}
-}
+  preferredToWork.sort((a, b) => a.totalDifficulty - b.totalDifficulty)
+  neutral.sort((a, b) => a.totalDifficulty - b.totalDifficulty)
+  softRestricted.sort((a, b) => a.totalDifficulty - b.totalDifficulty)
+  hardRestricted.sort((a, b) => a.totalDifficulty - b.totalDifficulty)
 
-export const countShifts = residents => resident => shift => {
-  const full_resident = residents.filter(r => r.name === resident.name)[0]
-
-  if (shift === "all") {
-    return full_resident.assignedShifts.length
+  return {
+    preferredToWork,
+    neutral,
+    softRestricted,
+    hardRestricted,
   }
-
-  return full_resident.assignedShifts.filter(s => s.shift === shift).length
 }
 
+export const countShifts = resident => shift => {
+  if (shift === "all") {
+    return resident.assignedShifts.length
+  }
+  return resident.assignedShifts.filter(s => s.shift === shift).length
+}
 
+export const getTotalDifficulty = holidays => resident =>
+  resident.assignedShifts.reduce((total, s) =>
+    isPartOfHolidayWeekend(holidays)(s.date)
+    ? total + DifficultyHeuristic["HOLIDAY"][s.shift]
+    : total + DifficultyHeuristic["REGULAR"][s.shift]
+  , 0)
