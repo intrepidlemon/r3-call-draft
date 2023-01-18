@@ -1,6 +1,5 @@
 import React, { useRef } from 'react'
 import { DateTime } from 'luxon'
-import { TiWaves } from 'react-icons/ti'
 
 import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
 import { useOnClickOutside } from '../react-utils'
@@ -11,18 +10,27 @@ import {
 
 import styles from './picker.module.css'
 
-const Picker = ({ assigned, date, shift, close }) => {
-  const ref = useRef()
+const Picker = ({ assigned, date, shift }) => {
   const engine = useEngine()
-  const { holidays } = engine
+  const { holidays, focusedDate, focusedShift } = engine
   const residents = residentsView(engine)
   const dispatch = useEngineDispatch()
 
-  useOnClickOutside(ref, close)
+  const nullFocusDateAndShift = () => {
+    dispatch({
+    type: "setFocusDateAndShift",
+    data: {
+      date: null,
+      shift: null,
+    }})
+  }
+
+  const ref = useRef()
+  useOnClickOutside(ref, () => nullFocusDateAndShift())
+
   const {preferredToWork, neutral, softRestricted, hardRestricted} = splitResidents(residents, holidays)(date)(shift)
 
   const assignResident = name => () => {
-      close()
       dispatch({
       type: "assignShift",
       data: {
@@ -30,11 +38,10 @@ const Picker = ({ assigned, date, shift, close }) => {
         shift,
         date,
       }})
+      nullFocusDateAndShift()
     }
 
-  return <div className={styles.parent}>
-    <TiWaves/>
-    <div ref={ref} className={styles.picker}>
+  return <div ref={ref} className={styles.picker}>
       <h3>
         {date.toLocaleString(DateTime.DATE_HUGE)} – { shift }
       </h3>
@@ -95,7 +102,6 @@ const Picker = ({ assigned, date, shift, close }) => {
               />)}
           </div>
       </div>
-    </div>
   </div>
 }
 

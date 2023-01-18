@@ -1,11 +1,3 @@
-.parent {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: lightgreen;
-  height: 100%;
-}
-
 .picker {
   position: fixed;
   height: auto;

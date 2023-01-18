@@ -31,3 +31,10 @@
   background: cornflowerblue;
 }
 
+.parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: lightgreen;
+  height: 100%;
+}

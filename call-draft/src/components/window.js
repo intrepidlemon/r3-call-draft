@@ -2,7 +2,7 @@ import React from 'react'
 
 import Calendar from './calendar'
 import Tally from './tally'
-import List from './list'
+import Sidebar from './sidebar'
 
 import styles from './window.module.css'
 
@@ -11,7 +11,7 @@ const Window = () => <div className={styles.window}>
     <Calendar/>
     <Tally/>
   </div>
-  <List/>
+  <Sidebar/>
 </div>
 
 export default Window

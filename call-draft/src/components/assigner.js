@@ -1,30 +1,33 @@
 import React from 'react'
 import { useState } from 'react'
 
-import { TiUserAdd } from "react-icons/ti"
+import { TiUserAdd, TiWaves } from "react-icons/ti"
 
-import { useEngine } from '../engine/context'
+import { useEngine, useEngineDispatch } from '../engine/context'
 import styles from './assigner.module.css'
 
-import Picker from './picker'
-
 const Assigner = ({ date, shift }) => {
-  const [open, setOpen] = useState(false)
-  const { assignedShifts, focusedResident } = useEngine()
+  const { assignedShifts, focusedResident, focusedDate, focusedShift } = useEngine()
+  const dispatch = useEngineDispatch()
 
   const workingResident = assignedShifts[date.toISO()] && assignedShifts[date.toISO()][shift]
 
-  if (open) {
-    return <Picker
-      assigned={workingResident}
-      date={date}
-      shift={shift}
-      close={() => setOpen(false)}
-    />
+  const setFocusDateAndShift = (date, shift) => () => {
+    dispatch({
+    type: "setFocusDateAndShift",
+    data: {
+      date: date,
+      shift: shift,
+    }})
+  }
+
+  //if focused date and shift, replace button with __
+  if (date == focusedDate && shift == focusedShift) {
+    return <div className={styles.parent}><TiWaves/></div>
   }
 
   return <button
-    onClick={() => setOpen(true)}
+    onClick={setFocusDateAndShift(date, shift)}
     className={styles.add}
   >
       { workingResident !== undefined

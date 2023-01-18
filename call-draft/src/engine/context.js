@@ -162,13 +162,9 @@ const engineReducer = (engine, action) => {
       break;
     }
 
-    case 'setFocusDate': {
-      engine.focusedDate = action.data
-      break;
-    }
-
-    case 'setFocusShift': {
-      engine.focusedShift = action.data
+    case 'setFocusDateAndShift': {
+      engine.focusedDate = action.data.date
+      engine.focusedShift = action.data.shift
       break;
     }
 

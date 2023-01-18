@@ -12,10 +12,10 @@ const Sidebar = () => {
   const { focusedShift, focusedDate, assignedShifts } = engine
 
   return <div className={styles.sidebar}>
-    {focusedShift != null
-      ? <Picker assigned={assignedShifts[focusedDate.toISO()][focusedShift]} date={focusedDate} shift={focusedShift} />
-      : <List/>
+    {(focusedShift != null) &&
+      <Picker assigned={assignedShifts[focusedDate.toISO()][focusedShift]} date={focusedDate} shift={focusedShift} />
     }
+    <List/>
   </div>
 }
 
