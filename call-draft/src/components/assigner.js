@@ -30,7 +30,6 @@ const Assigner = ({ date, shift }) => {
     }})
   }
 
-  //if focused date and shift, replace button with __
   if (date == focusedDate && shift == focusedShift) {
     return <div className={styles.parent}><TiWaves/></div>
   }
