@@ -46,6 +46,15 @@ thead tr > * + * {
   text-align: center;
 }
 
+tr td {
+  border: 1px solid transparent;
+}
+
+tr.active td{
+  border-top: 1pt solid black;
+  border-bottom: 1pt solid black;
+}
+
 td.resident {
   text-align: left;
 }

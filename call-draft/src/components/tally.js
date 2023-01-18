@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useEngine, residentsView } from '../engine/context'
+import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
 import { isPartOfHolidayWeekend } from '../utils'
 import {
   countShifts,
@@ -48,6 +48,17 @@ const Tally = () => {
 
 const Row = ({ resident, shiftNames, shifts, holidays }) => {
 
+  const { focusedResident } = useEngine()
+  const dispatch = useEngineDispatch()
+
+  const setFocusResident = name => () => {
+      dispatch({
+      type: "setFocusResident",
+      data: {
+        name: name,
+      }})
+    }
+
   const counts = shifts.reduce((obj, s) => {
     const count = obj[s.shift] === undefined ? 0 : obj[s.shift]
     if (!isPartOfHolidayWeekend(holidays)(s.date)) {
@@ -63,7 +74,7 @@ const Row = ({ resident, shiftNames, shifts, holidays }) => {
     return obj
   }, {})
   const totalDifficulty = getTotalDifficulty(holidays)(resident)
-  return <tr>
+  return <tr className={resident.name === focusedResident ? styles.active : ""}>
     <td className={styles.resident}>{resident.name}</td>
     { shiftNames.map(sn =>
       <td>
