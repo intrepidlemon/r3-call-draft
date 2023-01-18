@@ -24,10 +24,7 @@
   margin: 0;
   padding: 0;
   background: lightpink;
-}
-
-.add:hover {
+  border-radius: 25px;
   cursor: pointer;
-  background: cornflowerblue;
 }
 
