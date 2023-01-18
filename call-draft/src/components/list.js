@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { DateTime } from 'luxon'
 
-import { useEngine, residentsView } from '../engine/context'
+import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
 import {
   getFlatListOfShifts,
   getAllUnrestrictedResidentsPerShift,
@@ -36,11 +36,30 @@ const List = () => {
   return <div className={styles.list}>
     <button className={styles.refresh} onClick={refresh}>refresh</button>
     {
-      list.map(s => <div key={`${s.date.toMillis()}-${s.shift}`}>
-        {s.availableResidents.length} – {s.date.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)} – {s.shift}
-      </div>)
+      list.map(s => <Entry date={s.date} shift={s.shift} availableResidents={s.availableResidents}/>)
     }
   </div>
+}
+
+const Entry = ({ date, shift, availableResidents }) => {
+
+  const dispatch = useEngineDispatch()
+
+  const setFocusDateAndShift = (date, shift) => () => {
+    dispatch({
+    type: "setFocusDateAndShift",
+    data: {
+      date: date,
+      shift: shift,
+    }})
+  }
+
+  return <div 
+    className={styles.entry} 
+    key={`${date.toMillis()}-${shift}`}
+    onClick={setFocusDateAndShift(date, shift)}>
+        {availableResidents.length} – {date.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)} – {shift}
+      </div>
 }
 
 export default List

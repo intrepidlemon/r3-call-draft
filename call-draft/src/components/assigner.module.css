@@ -28,3 +28,11 @@
   cursor: pointer;
 }
 
+.parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: lightblue;
+  border-radius: 25px;
+  height: 100%;
+}
