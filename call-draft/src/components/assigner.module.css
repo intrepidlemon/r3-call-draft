@@ -24,17 +24,15 @@
   margin: 0;
   padding: 0;
   background: lightpink;
-}
-
-.add:hover {
+  border-radius: 25px;
   cursor: pointer;
-  background: cornflowerblue;
 }
 
 .parent {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: lightgreen;
+  background: lightblue;
+  border-radius: 25px;
   height: 100%;
 }

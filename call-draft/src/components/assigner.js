@@ -8,7 +8,16 @@ import styles from './assigner.module.css'
 
 const Assigner = ({ date, shift }) => {
   const { assignedShifts, focusedResident, focusedDate, focusedShift } = useEngine()
+
   const dispatch = useEngineDispatch()
+
+  const setFocusResident = name => () => {
+      dispatch({
+      type: "setFocusResident",
+      data: {
+        name: name,
+      }})
+    }
 
   const workingResident = assignedShifts[date.toISO()] && assignedShifts[date.toISO()][shift]
 
@@ -28,10 +37,12 @@ const Assigner = ({ date, shift }) => {
 
   return <button
     onClick={setFocusDateAndShift(date, shift)}
-    className={styles.add}
+    className={workingResident === focusedResident ? styles.active : styles.add}
+    onMouseEnter={setFocusResident(workingResident)} 
+    onMouseLeave={setFocusResident(null)}
   >
       { workingResident !== undefined
-        ? <div className={workingResident === focusedResident ? styles.active : ""}>{ workingResident }</div>
+        ? <div>{ workingResident }</div>
         : <TiUserAdd/>
       }
   </button>
