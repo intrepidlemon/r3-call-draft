@@ -30,14 +30,13 @@ const Assigner = ({ date, shift }) => {
     }})
   }
 
-  //if focused date and shift, replace button with __
   if (date == focusedDate && shift == focusedShift) {
     return <div className={styles.parent}><TiWaves/></div>
   }
 
   return <button
     onClick={setFocusDateAndShift(date, shift)}
-    className={workingResident === focusedResident ? styles.active : styles.add}
+    className={workingResident === focusedResident && workingResident != null ? styles.active : styles.add}
     onMouseEnter={setFocusResident(workingResident)} 
     onMouseLeave={setFocusResident(null)}
   >

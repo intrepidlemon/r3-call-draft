@@ -27,10 +27,10 @@ const Tally = () => {
     <table className={styles.table}>
       <thead>
         <tr>
-          <th>resident</th>
+          <th>Resident</th>
           { shiftNames.map(k => <th key={k}>{k}</th>)}
-          <th># shifts</th>
-          <th>difficulty</th>
+          <th># Shifts</th>
+          <th>Difficulty</th>
         </tr>
       </thead>
       <tbody>
@@ -78,8 +78,12 @@ const Row = ({ resident, shiftNames, shifts, holidays }) => {
     <td className={styles.resident}>{resident.name}</td>
     { shiftNames.map(sn =>
       <td>
-        { counts[sn] === undefined ? 0 : counts[sn] }
-        { holidayCounts[sn] ? `+${holidayCounts[sn]}H` : "   "}
+        <span>
+          { counts[sn] === undefined ? 0 : counts[sn] }
+        </span>
+        <span className={holidayCounts[sn] === undefined ? styles.noholiday : styles.holiday}>
+          { holidayCounts[sn] === undefined ? "0H" : `${holidayCounts[sn]}H` }
+        </span>
       </td>
     )}
       <td>
