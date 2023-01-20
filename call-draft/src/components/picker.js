@@ -4,7 +4,6 @@ import { DateTime } from 'luxon'
 import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
 import { useOnClickOutside } from '../react-utils'
 import {
-  mapConstraintToMessage,
   splitResidents,
 } from '../restrictions'
 
@@ -137,7 +136,7 @@ const Resident = ({ name, constraints, assign, numTotalShifts, numSpecificShifts
     </div>
     <div className={styles.constraints}>
       { constraints.map(c =>
-        <span> {mapConstraintToMessage[c]} </span>
+        <span> {c} </span>
       )}
     </div>
 </div>

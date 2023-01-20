@@ -200,7 +200,7 @@ export const queryBelowTotalCap = ( resident, holidays ) => date => shift =>
 export const getUnrestrictedResidents = restrictions => (residents, holidays) => day => shift =>
   residents.filter(
     resident => restrictions.every(
-      restriction => restriction(resident, holidays)(day)(shift)
+      restriction => constraintMap[restriction].fn(resident, holidays)(day)(shift)
     )
   )
 
@@ -210,8 +210,8 @@ export const getConstraintsForResidents = restrictions => (residents, holidays) 
       resident.name,
       Object.fromEntries(restrictions.map(restriction =>
         [
-          restriction.name,
-          restriction(resident, holidays)(day)(shift)
+          constraintMap[restriction].msg,
+          constraintMap[restriction].fn(resident, holidays)(day)(shift)
         ]
       ))
     ]
@@ -236,59 +236,59 @@ export const getAllUnrestrictedResidentsPerShift = flatShifts => restrictions =>
   }))
 
 export const hardRestrictions = [
-  queryNFWeekends,
-  querySameDay,
-  querySaturdayNightCallWeekend,
-  queryCHOP,
-  queryBelowHUPHolidayDayFloatCap,
-  queryBelowHUPDayFloatCap,
-  queryBelowPAHHolidayDayFloatCap,
-  queryBelowPAHDayFloatCap,
-  queryBelowBodyHolidayCap,
-  queryBelowBodyCap,
-  queryBelowHUPHolidayNightFloatCap,
-  queryBelowHUPNightFloatCap,
-  queryBelowPAHHolidayNightFloatCap,
-  queryBelowPAHNightFloatCap,
-  queryBelowAggregateNightFloatCap,
-  queryBelowAggregateNormalDayFloatCap,
-  queryBelowAggregateHolidayDayFloatCap,
-  queryBelowBodyAggregateCap,
-  queryBelowTotalCap,
-  queryBlackoutDays,
+  "queryNFWeekends",
+  "querySameDay",
+  "querySaturdayNightCallWeekend",
+  "queryCHOP",
+  "queryBelowHUPHolidayDayFloatCap",
+  "queryBelowHUPDayFloatCap",
+  "queryBelowPAHHolidayDayFloatCap",
+  "queryBelowPAHDayFloatCap",
+  "queryBelowBodyHolidayCap",
+  "queryBelowBodyCap",
+  "queryBelowHUPHolidayNightFloatCap",
+  "queryBelowHUPNightFloatCap",
+  "queryBelowPAHHolidayNightFloatCap",
+  "queryBelowPAHNightFloatCap",
+  "queryBelowAggregateNightFloatCap",
+  "queryBelowAggregateNormalDayFloatCap",
+  "queryBelowAggregateHolidayDayFloatCap",
+  "queryBelowBodyAggregateCap",
+  "queryBelowTotalCap",
+  "queryBlackoutDays",
 ]
 
 export const softRestrictions = [
-  queryPreferNotDays,
+  "queryPreferNotDays",
 ]
 
 export const preferToWorkFilters = [
-  queryPreferToWorkDays
+  "queryPreferToWorkDays",
 ]
 
-export const mapConstraintToMessage = {
-    "queryNFWeekends": "Night float week",
-    "queryBlackoutDays": "Blackout",
-    "querySameDay": "Same day shift",
-    "querySaturdayNightCallWeekend": "Night saturday call <> shift",
-    "queryCHOP": "CHOP week",
-    "queryBelowHUPHolidayDayFloatCap": "Max HUP holiday day shifts",
-    "queryBelowHUPDayFloatCap": "Max HUP day shifts",
-    "queryBelowPAHHolidayDayFloatCap": "Max PAH holiday day shifts",
-    "queryBelowPAHDayFloatCap": "Max PAH day shifts",
-    "queryBelowBodyHolidayCap": "Max holiday body shifts",
-    "queryBelowBodyCap": "Max weekend body shifts",
-    "queryBelowHUPHolidayNightFloatCap": "Max HUP holiday night shifts",
-    "queryBelowHUPNightFloatCap": "Max HUP night shifts",
-    "queryBelowPAHHolidayNightFloatCap": "Max PAH holiday night shifts",
-    "queryBelowPAHNightFloatCap": "Max PAH night shifts",
-    "queryBelowAggregateNightFloatCap": "Max night shifts",
-    "queryBelowAggregateNormalDayFloatCap": "Max day shifts",
-    "queryBelowAggregateHolidayDayFloatCap": "Max holiday day shifts",
-    "queryBelowBodyAggregateCap": "Max body shifts",
-    "queryBelowTotalCap": "Max shifts",
-    "queryPreferNotDays": "Prefer to not work",
-    "queryPreferToWorkDays": "Prefer to work",
+export const constraintMap = {
+    "queryNFWeekends": {"msg": "Night float week", "fn": queryNFWeekends},
+    "queryBlackoutDays": {"msg": "Blackout", "fn": queryBlackoutDays},
+    "querySameDay": {"msg": "Same day shift", "fn": querySameDay},
+    "querySaturdayNightCallWeekend": {"msg": "Night saturday call <> shift", "fn": querySaturdayNightCallWeekend},
+    "queryCHOP": {"msg": "CHOP week", "fn": queryCHOP},
+    "queryBelowHUPHolidayDayFloatCap": {"msg": "Max HUP holiday day shifts", "fn": queryBelowHUPHolidayDayFloatCap},
+    "queryBelowHUPDayFloatCap": {"msg": "Max HUP day shifts", "fn": queryBelowHUPDayFloatCap},
+    "queryBelowPAHHolidayDayFloatCap": {"msg": "Max PAH holiday day shifts", "fn": queryBelowHUPDayFloatCap},
+    "queryBelowPAHDayFloatCap": {"msg": "Max PAH day shifts", "fn": queryBelowPAHDayFloatCap},
+    "queryBelowBodyHolidayCap": {"msg": "Max holiday body shifts", "fn": queryBelowBodyHolidayCap},
+    "queryBelowBodyCap": {"msg": "Max weekend body shifts", "fn": queryBelowBodyCap},
+    "queryBelowHUPHolidayNightFloatCap": {"msg": "Max HUP holiday night shifts", "fn": queryBelowHUPHolidayNightFloatCap},
+    "queryBelowHUPNightFloatCap": {"msg": "Max HUP night shifts", "fn": queryBelowHUPNightFloatCap},
+    "queryBelowPAHHolidayNightFloatCap": {"msg": "Max PAH holiday night shifts", "fn": queryBelowPAHHolidayNightFloatCap},
+    "queryBelowPAHNightFloatCap": {"msg": "Max PAH night shifts", "fn": queryBelowPAHNightFloatCap},
+    "queryBelowAggregateNightFloatCap": {"msg": "Max night shifts", "fn": queryBelowAggregateNightFloatCap},
+    "queryBelowAggregateNormalDayFloatCap": {"msg": "Max day shifts", "fn": queryBelowAggregateNormalDayFloatCap},
+    "queryBelowAggregateHolidayDayFloatCap": {"msg": "Max holiday day shifts", "fn": queryBelowAggregateHolidayDayFloatCap},
+    "queryBelowBodyAggregateCap": {"msg": "Max body shifts", "fn": queryBelowBodyAggregateCap},
+    "queryBelowTotalCap": {"msg": "Max shifts", "fn": queryBelowTotalCap},
+    "queryPreferNotDays": {"msg": "Prefer to not work", "fn": queryPreferNotDays},
+    "queryPreferToWorkDays": {"msg": "Prefer to work", "fn": queryPreferToWorkDays},
   }
 
 const metadata = (residents, holidays) => (shift, name) => ({
