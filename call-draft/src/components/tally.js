@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
+import { useEngine, residentsView } from '../engine/context'
 import { isPartOfHolidayWeekend } from '../utils'
 import {
   countShifts,
@@ -49,15 +49,6 @@ const Tally = () => {
 const Row = ({ resident, shiftNames, shifts, holidays }) => {
 
   const { focusedResident } = useEngine()
-  const dispatch = useEngineDispatch()
-
-  const setFocusResident = name => () => {
-      dispatch({
-      type: "setFocusResident",
-      data: {
-        name: name,
-      }})
-    }
 
   const counts = shifts.reduce((obj, s) => {
     const count = obj[s.shift] === undefined ? 0 : obj[s.shift]

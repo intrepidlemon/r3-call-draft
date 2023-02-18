@@ -1,5 +1,4 @@
 import React from 'react'
-import { useState } from 'react'
 
 import { TiUserAdd, TiWaves } from "react-icons/ti"
 
@@ -30,14 +29,14 @@ const Assigner = ({ date, shift }) => {
     }})
   }
 
-  if (date == focusedDate && shift == focusedShift) {
+  if (date === focusedDate && shift === focusedShift) {
     return <div className={styles.parent}><TiWaves/></div>
   }
 
   return <button
     onClick={setFocusDateAndShift(date, shift)}
     className={workingResident === focusedResident && workingResident != null ? styles.active : styles.add}
-    onMouseEnter={setFocusResident(workingResident)} 
+    onMouseEnter={setFocusResident(workingResident)}
     onMouseLeave={setFocusResident(null)}
   >
       { workingResident !== undefined

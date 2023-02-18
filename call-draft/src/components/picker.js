@@ -11,7 +11,7 @@ import styles from './picker.module.css'
 
 const Picker = ({ assigned, date, shift }) => {
   const engine = useEngine()
-  const { holidays, focusedDate, focusedShift } = engine
+  const { holidays } = engine
   const residents = residentsView(engine)
   const dispatch = useEngineDispatch()
 
