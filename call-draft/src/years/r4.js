@@ -58,37 +58,17 @@ const queryBelowNeuroAggregateCap = ( resident, holidays ) => date => shift => {
 const queryBelowTotalCap = ( resident, holidays ) => date => shift =>
   resident.assignedShifts.length < PerShiftCaps["TOTAL CAP"]
 
-export const hardRestrictions = [
-  ...generic.hardRestrictions,
-  "queryPPWeekends",
-  "queryPrNWeekends",
-  "queryBelowNeuroHolidayCap",
-  "queryBelowNeuroCap",
-  "queryBelowNeuroAggregateCap",
-  "queryBelowSwingPAHHolidayCap",
-  "queryBelowSwingPAHCap",
-  "queryBelowTotalCap",
+export const constraints = [
+  ...generic.constraints,
+  { "name": "queryPPWeekends", "fn": queryPPWeekends, "msg": "Private practice week", "type": "hard" },
+  { "name": "queryPrNWeekends", "fn": queryPrNWeekends, "msg": "Prebsy nights week", "type": "hard" },
+  { "name": "queryBelowNeuroHolidayCap", "fn": queryBelowNeuroHolidayCap, "msg": "Max Neuro shifts", "type": "hard" },
+  { "name": "queryBelowNeuroCap", "fn": queryBelowNeuroCap, "msg": "Max Neuro shifts", "type": "hard" },
+  { "name": "queryBelowNeuroAggregateCap", "fn": queryBelowNeuroAggregateCap, "msg": "Max night shifts", "type": "hard" },
+  { "name": "queryBelowSwingPAHHolidayCap", "fn": queryBelowSwingPAHHolidayCap, "msg": "Max Swing PAH holiday shifts", "type": "hard" },
+  { "name": "queryBelowSwingPAHCap", "fn": queryBelowSwingPAHCap, "msg": "Max Swing PAH shifts", "type": "hard" },
+  { "name": "queryBelowTotalCap", "fn": queryBelowTotalCap, "msg": "Max shifts", "type": "hard" },
 ]
-
-export const softRestrictions = [
-  ...generic.softRestrictions,
-]
-
-export const preferToWorkFilters = [
-  ...generic.preferToWorkFilters,
-]
-
-export const constraintMap = {
-  ...generic.constraintMap,
-  "queryPPWeekends": {"msg": "Private practice week", "fn": queryPPWeekends},
-  "queryPrNWeekends": {"msg": "Prebsy nights week", "fn": queryPrNWeekends},
-  "queryBelowNeuroHolidayCap": {"msg": "Max Neuro shifts", "fn": queryBelowNeuroHolidayCap},
-  "queryBelowNeuroCap": {"msg": "Max Neuro shifts", "fn": queryBelowNeuroCap},
-  "queryBelowNeuroAggregateCap": {"msg": "Max night shifts", "fn": queryBelowNeuroAggregateCap},
-  "queryBelowSwingPAHHolidayCap": {"msg": "Max Swing PAH holiday shifts", "fn": queryBelowSwingPAHHolidayCap},
-  "queryBelowSwingPAHCap": {"msg": "Max Swing PAH shifts", "fn": queryBelowSwingPAHCap},
-  "queryBelowTotalCap": {"msg": "Max shifts", "fn": queryBelowTotalCap},
-}
 
 export const getTotalDifficulty = holidays => resident =>
   resident.assignedShifts.reduce((total, s) =>

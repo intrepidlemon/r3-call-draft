@@ -61,29 +61,19 @@ export const floatCap = (SHIFT, HOLIDAY, PerShiftCaps) => ( resident, holidays )
   return true
 }
 
-export const hardRestrictions = [
-  "querySameDay",
-  "queryBlackoutDays",
-  "queryVacation",
-]
+export const constraints = [
+  // hard restrictions
+  { "name": "queryBlackoutDays", "fn": queryBlackoutDays, "msg": "Blackout", "type": "hard" },
+  { "name": "querySameDay", "fn": querySameDay, "msg": "Same day shift", "type": "hard" },
+  { "name": "queryVacation", "fn": queryVacation, "msg": "Vacation week", "type": "hard" },
 
-export const softRestrictions = [
-  "queryPreferNotDays",
-  "queryIR",
-]
+  // soft restrictions
+  { "name": "queryPreferNotDays", "fn": queryPreferNotDays, "msg": "Prefer to not work", "type": "soft" },
+  { "name": "queryIR", "fn": queryIR, "msg": "IR week", "type": "soft"},
 
-export const preferToWorkFilters = [
-  "queryPreferToWorkDays",
+  // prefer to work filter
+  { "name": "queryPreferToWorkDays", "fn": queryPreferToWorkDays, "msg": "Prefer to work", "type": "prefer" },
 ]
-
-export const constraintMap = {
-  "queryBlackoutDays": {"msg": "Blackout", "fn": queryBlackoutDays},
-  "querySameDay": {"msg": "Same day shift", "fn": querySameDay},
-  "queryPreferNotDays": {"msg": "Prefer to not work", "fn": queryPreferNotDays},
-  "queryPreferToWorkDays": {"msg": "Prefer to work", "fn": queryPreferToWorkDays},
-  "queryVacation": {"msg": "Vacation week", "fn": queryVacation},
-  "queryIR": {"msg": "IR week", "fn": queryIR},
-}
 
 export const genericGetTotalDifficulty = DifficultyHeuristic => holidays => resident =>
   resident.assignedShifts.reduce((total, s) =>
