@@ -103,6 +103,14 @@ const queryBelowAggregateNightFloatCap = ( resident, holidays ) => date => shift
   return true
 }
 
+
+const queryBelowNeuroAggregateCap = ( resident, holidays ) => date => shift => {
+  if (shift.includes("Neuro"))
+    return resident.assignedShifts.filter(s => s.shift.includes("Neuro")).length < PerShiftCaps["AGGREGATE NEURO"]
+  return true
+}
+
+
 const queryBelowBodyAggregateCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("Body"))
     return resident.assignedShifts.filter(s => s.shift.includes("Body")).length < PerShiftCaps["AGGREGATE BODY"]
@@ -129,6 +137,7 @@ export const hardRestrictions = [
   "queryBelowPAHNightFloatCap",
   "queryBelowAggregateNightFloatCap",
   "queryBelowBodyAggregateCap",
+  "queryBelowNeuroAggregateCap",
   "queryBelowTotalCap",
 ]
 

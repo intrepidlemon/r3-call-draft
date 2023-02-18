@@ -5,8 +5,8 @@ import {
   constraintMap,
 
   getTotalDifficulty,
-} from './years/r3'
-export * from './years/r3'
+} from './years/r4'
+export * from './years/r4'
 
 export const getUnrestrictedResidents = restrictions => (residents, holidays) => day => shift =>
   residents.filter(
