@@ -1,0 +1,3 @@
+export const requiredShiftsURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ8POx_2ekDFfj-3rHdkpuonPJGM8eTfAccsC_OjiqWTo3C22rDkH-fF6FEBS3CxtsqdukyplaiJKb/pub?gid=0&single=true&output=csv"
+export const residentAssignedScheduleUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ8POx_2ekDFfj-3rHdkpuonPJGM8eTfAccsC_OjiqWTo3C22rDkH-fF6FEBS3CxtsqdukyplaiJKb/pub?gid=1947318660&single=true&output=csv"
+export const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ8POx_2ekDFfj-3rHdkpuonPJGM8eTfAccsC_OjiqWTo3C22rDkH-fF6FEBS3CxtsqdukyplaiJKb/pub?gid=396610078&single=true&output=csv"
