@@ -1,4 +1,4 @@
-import { sameDay,  isPartOfHolidayWeekend} from '../utils'
+import { sameDay,  isPartOfHolidayWeekend, getPriorSaturday, getNextSunday} from '../utils'
 
 // shift conflicts with another shift that day at a different location
 export const querySameDay = ({ assignedShifts }) => date => shift =>
@@ -30,6 +30,21 @@ export const queryPreferToWorkDays = ({ preferToWork }) => date => shift =>
   false
 )
 
+
+export const queryVacation = ({ VAC }) => date => shift => VAC.reduce((okay, rotation_monday) =>
+  okay &&
+  !(getPriorSaturday(rotation_monday) <= date && date <= getNextSunday(rotation_monday)),
+  true
+)
+
+
+export const queryIR = ({ IR }) => date => shift => IR.reduce((okay, rotation_monday) =>
+  okay &&
+  !(getPriorSaturday(rotation_monday) <= date && date <= getNextSunday(rotation_monday)),
+  true
+)
+
+
 export const floatCap = (SHIFT, HOLIDAY, PerShiftCaps) => ( resident, holidays ) => date => shift => {
   if (
     shift === SHIFT &&
@@ -49,10 +64,12 @@ export const floatCap = (SHIFT, HOLIDAY, PerShiftCaps) => ( resident, holidays )
 export const hardRestrictions = [
   "querySameDay",
   "queryBlackoutDays",
+  "queryVacation",
 ]
 
 export const softRestrictions = [
   "queryPreferNotDays",
+  "queryIR",
 ]
 
 export const preferToWorkFilters = [
@@ -64,6 +81,8 @@ export const constraintMap = {
   "querySameDay": {"msg": "Same day shift", "fn": querySameDay},
   "queryPreferNotDays": {"msg": "Prefer to not work", "fn": queryPreferNotDays},
   "queryPreferToWorkDays": {"msg": "Prefer to work", "fn": queryPreferToWorkDays},
+  "queryVacation": {"msg": "Vacation week", "fn": queryVacation},
+  "queryIR": {"msg": "IR week", "fn": queryIR},
 }
 
 export const genericGetTotalDifficulty = DifficultyHeuristic => holidays => resident =>

@@ -1,6 +1,5 @@
 import * as generic from './generic'
 import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isPartOfHolidayWeekend } from '../utils'
-// shift is adjacent to an assigned night float week
 
 export const requiredShiftsURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdBkM4XlLYnuATduPs4eQBi77RNtIdaXX2HNVFPHzFgvl7tphlwcDYDiLs32RhDXuyIAZaMdFnJiAw/pub?gid=0&single=true&output=csv"
 export const residentAssignedScheduleUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdBkM4XlLYnuATduPs4eQBi77RNtIdaXX2HNVFPHzFgvl7tphlwcDYDiLs32RhDXuyIAZaMdFnJiAw/pub?gid=2004341310&single=true&output=csv"
@@ -8,48 +7,62 @@ export const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/
 
 const PerShiftCaps = {
   "REGULAR" : {
-    "DF HUP": 6,
-    "DF PAH": 6,
+    "Neuro": 6,
     "Body Call": 2,
     "NF HUP": 2,
     "NF PAH": 2,
   },
 
   "HOLIDAY" : {
-    "DF HUP": 3,
-    "DF PAH": 3,
+    "Neuro": 3,
     "Body Call": 1,
     "NF HUP": 1,
     "NF PAH": 1,
   },
   "AGGREGATE NF": 5,
-  "AGGREGATE DF": 13,
-  "AGGREGATE HOLIDAY DF": 3,
+  "AGGREGATE NEURO": 13,
   "AGGREGATE BODY": 3,
   "TOTAL CAP": 19,
 }
 
 const DifficultyHeuristic = {
   "REGULAR" : {
-    "DF HUP": 1.0,
-    "DF PAH": 1.0,
+    "Neuro": 1.0,
     "Body Call": 0.75,
     "NF HUP": 1.0,
     "NF PAH": 1.0,
   },
 
   "HOLIDAY" : {
-    "DF HUP": 1.25,
-    "DF PAH": 1.25,
+    "Neuro": 1.25,
     "Body Call": 1,
     "NF HUP": 1.25,
     "NF PAH": 1.25,
   },
 }
 
-const queryNFWeekends = ({ NF }) => date => shift => NF.reduce((okay, nf) =>
+// shift is on the weekend of night float rotation
+const queryNFWeekends = ({ NF }) => date => shift => NF.reduce((okay, rotation_monday) =>
   okay &&
-  !(getPriorSaturday(nf) <= date && date <= getNextSunday(nf)),
+  !(getPriorSaturday(rotation_monday) <= date && date <= getNextSunday(rotation_monday)),
+  true
+)
+
+const queryPPWeekends = ({ PP }) => date => shift => PP.reduce((okay, rotation_monday) =>
+  okay &&
+  !(getPriorSaturday(rotation_monday) <= date && date <= getNextSunday(rotation_monday)),
+  true
+)
+
+const queryGlobal = ({ GLOBAL }) => date => shift => GLOBAL.reduce((okay, rotation_monday) =>
+  okay &&
+  !(getPriorSaturday(rotation_monday) <= date && date <= getNextSunday(rotation_monday)),
+  true
+)
+
+const queryAIRP = ({ AIRP }) => date => shift => AIRP.reduce((okay, rotation_monday) =>
+  okay &&
+  !(getPriorSaturday(rotation_monday) <= date && date <= getNextSunday(rotation_monday)),
   true
 )
 
@@ -63,8 +76,8 @@ const querySaturdayNightCallWeekend = ({ assignedShifts }) => date => shift =>
     ),
   true
 )
-// shift is between two assigned CHOP weeks
 
+// shift is between two assigned CHOP weeks
 const queryCHOP = ({ CHOP }) => date => shift =>
   CHOP.reduce((conflict, cp) =>
     conflict + (
@@ -75,11 +88,8 @@ const queryCHOP = ({ CHOP }) => date => shift =>
   0
 ) < 2
 
-
-const queryBelowHUPHolidayDayFloatCap     = generic.floatCap("DF HUP", true, PerShiftCaps)
-const queryBelowHUPDayFloatCap            = generic.floatCap("DF HUP", false, PerShiftCaps)
-const queryBelowPAHHolidayDayFloatCap     = generic.floatCap("DF PAH", true, PerShiftCaps)
-const queryBelowPAHDayFloatCap            = generic.floatCap("DF PAH", false, PerShiftCaps)
+const queryBelowNeuroHolidayCap           = generic.floatCap("Neuro", true, PerShiftCaps)
+const queryBelowNeuroCap                  = generic.floatCap("Neuro", false, PerShiftCaps)
 const queryBelowBodyHolidayCap            = generic.floatCap("Body Call", true, PerShiftCaps)
 const queryBelowBodyCap                   = generic.floatCap("Body Call", true, PerShiftCaps)
 const queryBelowHUPHolidayNightFloatCap   = generic.floatCap("NF HUP", true, PerShiftCaps)
@@ -90,18 +100,6 @@ const queryBelowPAHNightFloatCap          = generic.floatCap("NF PAH", false, Pe
 const queryBelowAggregateNightFloatCap = ( resident, holidays ) => date => shift => {
   if (shift.includes("NF"))
     return resident.assignedShifts.filter(s => s.shift.includes("NF")).length < PerShiftCaps["AGGREGATE NF"]
-  return true
-}
-
-const queryBelowAggregateNormalDayFloatCap = ( resident, holidays ) => date => shift => {
-  if (shift.includes("DF") && !isPartOfHolidayWeekend(holidays)(date))
-    return resident.assignedShifts.filter(s => !isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < PerShiftCaps["AGGREGATE DF"]
-  return true
-}
-
-const queryBelowAggregateHolidayDayFloatCap = ( resident, holidays ) => date => shift => {
-  if (shift.includes("DF") && isPartOfHolidayWeekend(holidays)(date))
-    return resident.assignedShifts.filter(s => isPartOfHolidayWeekend(holidays)(s.date) && s.shift.includes("DF")).length < PerShiftCaps["AGGREGATE HOLIDAY DF"]
   return true
 }
 
@@ -116,13 +114,13 @@ const queryBelowTotalCap = ( resident, holidays ) => date => shift =>
 
 export const hardRestrictions = [
   ...generic.hardRestrictions,
+  "queryGlobal",
   "queryNFWeekends",
+  "queryPPWeekends",
   "querySaturdayNightCallWeekend",
   "queryCHOP",
-  "queryBelowHUPHolidayDayFloatCap",
-  "queryBelowHUPDayFloatCap",
-  "queryBelowPAHHolidayDayFloatCap",
-  "queryBelowPAHDayFloatCap",
+  "queryBelowNeuroHolidayCap",
+  "queryBelowNeuroCap",
   "queryBelowBodyHolidayCap",
   "queryBelowBodyCap",
   "queryBelowHUPHolidayNightFloatCap",
@@ -130,14 +128,13 @@ export const hardRestrictions = [
   "queryBelowPAHHolidayNightFloatCap",
   "queryBelowPAHNightFloatCap",
   "queryBelowAggregateNightFloatCap",
-  "queryBelowAggregateNormalDayFloatCap",
-  "queryBelowAggregateHolidayDayFloatCap",
   "queryBelowBodyAggregateCap",
   "queryBelowTotalCap",
 ]
 
 export const softRestrictions = [
   ...generic.softRestrictions,
+  "queryAIRP",
 ]
 
 export const preferToWorkFilters = [
@@ -147,12 +144,13 @@ export const preferToWorkFilters = [
 export const constraintMap = {
   ...generic.constraintMap,
   "queryNFWeekends": {"msg": "Night float week", "fn": queryNFWeekends},
+  "queryPPWeekends": {"msg": "Private practice week", "fn": queryPPWeekends},
   "querySaturdayNightCallWeekend": {"msg": "Night saturday call <> shift", "fn": querySaturdayNightCallWeekend},
+  "queryAIRP": {"msg": "AIRP week", "fn": queryAIRP},
+  "queryGlobal": {"msg": "Global studies week", "fn": queryGlobal},
   "queryCHOP": {"msg": "CHOP week", "fn": queryCHOP},
-  "queryBelowHUPHolidayDayFloatCap": {"msg": "Max HUP holiday day shifts", "fn": queryBelowHUPHolidayDayFloatCap},
-  "queryBelowHUPDayFloatCap": {"msg": "Max HUP day shifts", "fn": queryBelowHUPDayFloatCap},
-  "queryBelowPAHHolidayDayFloatCap": {"msg": "Max PAH holiday day shifts", "fn": queryBelowPAHHolidayDayFloatCap},
-  "queryBelowPAHDayFloatCap": {"msg": "Max PAH day shifts", "fn": queryBelowPAHDayFloatCap},
+  "queryBelowNeuroHolidayCap": {"msg": "Max Neuro shifts", "fn": queryBelowNeuroHolidayCap},
+  "queryBelowNeuroCap": {"msg": "Max Neuro shifts", "fn": queryBelowNeuroCap},
   "queryBelowBodyHolidayCap": {"msg": "Max holiday body shifts", "fn": queryBelowBodyHolidayCap},
   "queryBelowBodyCap": {"msg": "Max weekend body shifts", "fn": queryBelowBodyCap},
   "queryBelowHUPHolidayNightFloatCap": {"msg": "Max HUP holiday night shifts", "fn": queryBelowHUPHolidayNightFloatCap},
@@ -160,8 +158,6 @@ export const constraintMap = {
   "queryBelowPAHHolidayNightFloatCap": {"msg": "Max PAH holiday night shifts", "fn": queryBelowPAHHolidayNightFloatCap},
   "queryBelowPAHNightFloatCap": {"msg": "Max PAH night shifts", "fn": queryBelowPAHNightFloatCap},
   "queryBelowAggregateNightFloatCap": {"msg": "Max night shifts", "fn": queryBelowAggregateNightFloatCap},
-  "queryBelowAggregateNormalDayFloatCap": {"msg": "Max day shifts", "fn": queryBelowAggregateNormalDayFloatCap},
-  "queryBelowAggregateHolidayDayFloatCap": {"msg": "Max holiday day shifts", "fn": queryBelowAggregateHolidayDayFloatCap},
   "queryBelowBodyAggregateCap": {"msg": "Max body shifts", "fn": queryBelowBodyAggregateCap},
   "queryBelowTotalCap": {"msg": "Max shifts", "fn": queryBelowTotalCap},
 }
