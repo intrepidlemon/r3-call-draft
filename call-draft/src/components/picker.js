@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { DateTime } from 'luxon'
 
-import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
+import { useEngine, residentsView, useEngineDispatch } from '../context'
 import { useOnClickOutside } from '../react-utils'
 import {
   splitResidents,

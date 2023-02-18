@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { DateTime } from 'luxon'
 
-import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
+import { useEngine, residentsView, useEngineDispatch } from '../context'
 import {
   getFlatListOfShifts,
   getAllUnrestrictedResidentsPerShift,
@@ -54,8 +54,8 @@ const Entry = ({ date, shift, availableResidents }) => {
     }})
   }
 
-  return <div 
-    className={styles.entry} 
+  return <div
+    className={styles.entry}
     key={`${date.toMillis()}-${shift}`}
     onClick={setFocusDateAndShift(date, shift)}>
         {availableResidents.length} – {date.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)} – {shift}

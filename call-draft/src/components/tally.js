@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useEngine, residentsView } from '../engine/context'
+import { useEngine, residentsView } from '../context'
 import { isPartOfHolidayWeekend } from '../utils'
 import {
   countShifts,

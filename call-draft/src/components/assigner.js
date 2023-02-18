@@ -2,7 +2,7 @@ import React from 'react'
 
 import { TiUserAdd, TiWaves } from "react-icons/ti"
 
-import { useEngine, useEngineDispatch } from '../engine/context'
+import { useEngine, useEngineDispatch } from '../context'
 import styles from './assigner.module.css'
 
 const Assigner = ({ date, shift }) => {
