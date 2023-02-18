@@ -8,34 +8,34 @@ export const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/
 const PerShiftCaps = {
   "REGULAR" : {
     "Neuro": 6,
-    "Body Call": 2,
+    "Body Call": 5,
     "NF HUP": 2,
     "NF PAH": 2,
   },
 
   "HOLIDAY" : {
     "Neuro": 3,
-    "Body Call": 1,
-    "NF HUP": 1,
-    "NF PAH": 1,
+    "Body Call": 3,
+    "NF HUP": 0,
+    "NF PAH": 0,
   },
-  "AGGREGATE NF": 5,
-  "AGGREGATE NEURO": 13,
-  "AGGREGATE BODY": 3,
-  "TOTAL CAP": 19,
+  "AGGREGATE NF": 3,
+  "AGGREGATE NEURO": 6,
+  "AGGREGATE BODY": 5,
+  "TOTAL CAP": 14,
 }
 
 const DifficultyHeuristic = {
   "REGULAR" : {
     "Neuro": 1.0,
-    "Body Call": 0.75,
+    "Body Call": 1.0,
     "NF HUP": 1.0,
     "NF PAH": 1.0,
   },
 
   "HOLIDAY" : {
     "Neuro": 1.25,
-    "Body Call": 1,
+    "Body Call": 1.0,
     "NF HUP": 1.25,
     "NF PAH": 1.25,
   },

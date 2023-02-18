@@ -1,5 +1,5 @@
 import * as generic from './generic'
-import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isPartOfHolidayWeekend } from '../utils'
+import { getPriorSaturday, getNextSunday, isPartOfHolidayWeekend } from '../utils'
 
 export const requiredShiftsURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ8POx_2ekDFfj-3rHdkpuonPJGM8eTfAccsC_OjiqWTo3C22rDkH-fF6FEBS3CxtsqdukyplaiJKb/pub?gid=0&single=true&output=csv"
 export const residentAssignedScheduleUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSZ8POx_2ekDFfj-3rHdkpuonPJGM8eTfAccsC_OjiqWTo3C22rDkH-fF6FEBS3CxtsqdukyplaiJKb/pub?gid=1947318660&single=true&output=csv"
@@ -8,16 +8,16 @@ export const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/
 const PerShiftCaps = {
   "REGULAR" : {
     "Neuro": 2,
-    "Swing PAH": 6,
+    "Swing PAH": 8,
   },
 
   "HOLIDAY" : {
     "Neuro": 3,
-    "Swing PAH": 6,
+    "Swing PAH": 3,
   },
-  "AGGREGATE NEURO": 13,
-  "AGGREGATE SWING PAH": 3,
-  "TOTAL CAP": 19,
+  "AGGREGATE NEURO": 3,
+  "AGGREGATE SWING PAH": 8,
+  "TOTAL CAP": 14,
 }
 
 const DifficultyHeuristic = {
@@ -41,17 +41,6 @@ const queryPPWeekends = ({ PP }) => date => shift => PP.reduce((okay, rotation_m
 const queryPrNWeekends = ({ PRN }) => date => shift => PRN.reduce((okay, rotation_monday) =>
   okay &&
   !(getPriorSaturday(rotation_monday) <= date && date <= getNextSunday(rotation_monday)),
-  true
-)
-
-// shift is on the same day as a saturday night call
-const querySaturdayNightCallWeekend = ({ assignedShifts }) => date => shift =>
-  assignedShifts.reduce((okay, s) =>
-  okay &&
-    !(
-      (s.shift.includes("NF") && sameDay(getPriorSaturday(date), s.date))
-      || (shift.includes("NF") && sameDay(getPriorSaturday(s.date), date))
-    ),
   true
 )
 
