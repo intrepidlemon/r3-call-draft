@@ -120,7 +120,7 @@ const queryBelowTotalCap = ( resident, holidays ) => date => shift =>
   resident.assignedShifts.length < PerShiftCaps["TOTAL CAP"]
 
 export const constraints = [
-  ..generic.constraints,
+  ...generic.constraints,
   //Hard constraints
   { "name": "queryNFWeekends", "fn": queryNFWeekends, "msg": "Night float week", "type": "hard" },
   { "name": "queryPPWeekends", "fn": queryPPWeekends, "msg": "Private practice week", "type": "hard" },
@@ -137,6 +137,7 @@ export const constraints = [
   { "name": "queryBelowPAHNightFloatCap", "fn": queryBelowPAHNightFloatCap, "msg": "Max PAH night shifts", "type": "hard" },
   { "name": "queryBelowAggregateNightFloatCap", "fn": queryBelowAggregateNightFloatCap, "msg": "Max night shifts", "type": "hard" },
   { "name": "queryBelowBodyAggregateCap", "fn": queryBelowBodyAggregateCap, "msg": "Max body shifts", "type": "hard" },
+  { "name": "queryBelowNeuroAggregateCap", "fn": queryBelowNeuroAggregateCap, "msg": "Max aggregate neuro shifts", "type": "hard" },
   { "name": "queryBelowTotalCap", "fn": queryBelowTotalCap, "msg": "Max shifts", "type": "hard" },
 
   //Soft constraints
