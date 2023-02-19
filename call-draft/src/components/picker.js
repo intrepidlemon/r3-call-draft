@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { DateTime } from 'luxon'
 
-import { useEngine, residentsView, useEngineDispatch } from '../engine/context'
+import { useEngine, residentsView, useEngineDispatch } from '../context'
 import { useOnClickOutside } from '../react-utils'
 import {
   splitResidents,
@@ -11,7 +11,7 @@ import styles from './picker.module.css'
 
 const Picker = ({ assigned, date, shift }) => {
   const engine = useEngine()
-  const { holidays, focusedDate, focusedShift } = engine
+  const { holidays } = engine
   const residents = residentsView(engine)
   const dispatch = useEngineDispatch()
 

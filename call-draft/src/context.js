@@ -3,14 +3,16 @@ import { useImmerReducer } from 'use-immer'
 import { DateTime } from 'luxon'
 import { freeze } from 'immer'
 
-import { cleanResidentCSV, extractRotations } from '../csv-handling'
-import { sameDay, isHoliday } from '../utils'
+import { cleanResidentCSV, extractRotations } from './csv-handling'
+import { sameDay, isHoliday } from './utils'
 
 import Papa from 'papaparse'
 
-const requiredShiftsURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=1433333551&single=true&output=csv"
-const residentAssignedScheduleUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=530426204&single=true&output=csv"
-const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=0&single=true&output=csv"
+import {
+  requiredShiftsURL,
+  residentAssignedScheduleUrl,
+  residentPreferencesUrl,
+} from './restrictions'
 
 const EngineContext = createContext(null)
 const EngineDispatchContext = createContext(null)
