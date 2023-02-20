@@ -1,6 +1,7 @@
 import * as generic from './generic'
 import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isPartOfHolidayWeekend } from '../utils'
 
+export const yearName= "r3"
 export const requiredShiftsURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdBkM4XlLYnuATduPs4eQBi77RNtIdaXX2HNVFPHzFgvl7tphlwcDYDiLs32RhDXuyIAZaMdFnJiAw/pub?gid=0&single=true&output=csv"
 export const residentAssignedScheduleUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdBkM4XlLYnuATduPs4eQBi77RNtIdaXX2HNVFPHzFgvl7tphlwcDYDiLs32RhDXuyIAZaMdFnJiAw/pub?gid=2004341310&single=true&output=csv"
 export const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQdBkM4XlLYnuATduPs4eQBi77RNtIdaXX2HNVFPHzFgvl7tphlwcDYDiLs32RhDXuyIAZaMdFnJiAw/pub?gid=973200211&single=true&output=csv"
