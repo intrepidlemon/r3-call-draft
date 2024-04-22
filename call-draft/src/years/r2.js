@@ -1,10 +1,14 @@
 import * as generic from './generic'
-import { getPriorSaturday, getPriorSunday, getNextSaturday, getNextSunday, sameDay, isPartOfHolidayWeekend } from '../utils'
-// shift is adjacent to an assigned night float week
+import { getPriorXDay, getNextXDay, getPriorSaturday, getNextSunday, sameDay, isPartOfHolidayWeekend } from '../utils'
 
-export const requiredShiftsURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=1433333551&single=true&output=csv"
-export const residentAssignedScheduleUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=530426204&single=true&output=csv"
-export const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=0&single=true&output=csv"
+export const yearName = "r2"
+// export const requiredShiftsURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=1433333551&single=true&output=csv"
+// export const residentAssignedScheduleUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=530426204&single=true&output=csv"
+// export const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQNefnctzjWPpE-rWcQyTesFq0GJaYjMQ-Ux20oO8bx-3GgLTCT7vkOxMzD0nq_dTviZ_SIyMMmlqt8/pub?gid=0&single=true&output=csv"
+
+export const requiredShiftsURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsvF-8mREle8q3pup7n785hpMAcKFYkAiBvQ-kIUMIdtN-MFTOM5vtN1vt-FwOk3_zx93d1z95sdNb/pub?gid=0&single=true&output=csv"
+export const residentAssignedScheduleUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsvF-8mREle8q3pup7n785hpMAcKFYkAiBvQ-kIUMIdtN-MFTOM5vtN1vt-FwOk3_zx93d1z95sdNb/pub?gid=1197904990&single=true&output=csv"
+export const residentPreferencesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsvF-8mREle8q3pup7n785hpMAcKFYkAiBvQ-kIUMIdtN-MFTOM5vtN1vt-FwOk3_zx93d1z95sdNb/pub?gid=128226207&single=true&output=csv"
 
 const PerShiftCaps = {
   "REGULAR" : {
@@ -63,17 +67,16 @@ const querySaturdayNightCallWeekend = ({ assignedShifts }) => date => shift =>
     ),
   true
 )
+
 // shift is between two assigned CHOP weeks
 
 const queryCHOP = ({ CHOP }) => date => shift =>
   CHOP.reduce((conflict, cp) =>
     conflict + (
-    sameDay(getPriorSaturday(cp), date)
-    || sameDay(getPriorSunday(cp), date)
-    || sameDay(getNextSaturday(cp), date)
-    || sameDay(getNextSunday(cp), date)),
+    sameDay(getPriorXDay(cp, date.weekData.weekday), date)
+    || sameDay(getNextXDay(cp, date.weekData.weekday), date)),
   0
-) < 2
+  ) < 2
 
 
 const queryBelowHUPHolidayDayFloatCap     = generic.floatCap("DF HUP", true, PerShiftCaps)
